@@ -1,15 +1,18 @@
 apiVersion: v2
 name: zookeeper
 version: 1.0.0
-appVersion: 3.6.0
-description: Helm Charts for deploying Apache Zookeeper Quorum on Kubernetes
+appVersion: 3.9.1
+description: Helm chart for deploying Apache Zookeeper on a Kubernetes cluster
 type: application
 keywords:
+  - apache
   - zookeeper
+  - unicef
+  - magasin
 home: 'http://zookeeper.apache.org/'
 sources:
-  - 'https://github.com/Agirish/drill-helm-charts'
+  - 'https://github.com/unicef/magasin-drill'
 maintainers:
-  - name: Abhishek Girish
-    email: agirish@apache.org
+  - name: Merlos
+    email: merlos@users.noreply.github.com
 
