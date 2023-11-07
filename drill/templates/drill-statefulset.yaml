@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  namespace: {{.Values.global.namespace}}
+  namespace: {{ .Release.Namespace | quote }}
   name: {{.Values.drill.id}}-drillbit
 spec:
   serviceName: drill-service

@@ -2,6 +2,7 @@
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
+  namespace: {{ .Release.Namespace | quote }}
   name: {{ .Values.drill.id }}-hpa
 spec:
   scaleTargetRef:
