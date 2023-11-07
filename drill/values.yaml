@@ -1,11 +1,10 @@
 # Drill Image repository
 repo: hub.docker.com/u/
 
-# Global sub-section
-global:
-  # Namespace for the Drill chart (and dependent Zookeeper chart)
-  # Note that only one Drill cluster can be deployed in a given namespace
-  namespace: default
+
+# Namespace for the Drill chart (and dependent Zookeeper chart)
+# Note that only one Drill cluster can be deployed in a given namespace
+namespace: default
 
 # Drill sub-section
 drill:

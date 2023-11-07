@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  namespace: {{ .Values.global.namespace }}
+  namespace: {{ .Values.namespace }}
   name: {{ .Values.id }}
 spec:
   serviceName: zk-service
