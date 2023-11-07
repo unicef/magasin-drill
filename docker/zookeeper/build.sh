@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x 
+
 if [[ -z $1 || -z $2 ]]; then
   echo "Usage: $0 REGISTRY VERSION"
   echo "  REGISTRY: The registry where the package will be published." 
@@ -43,6 +45,8 @@ docker buildx build --builder=magasin-builder --platform linux/amd64 --build-arg
 
 if [[ $? -eq 0 ]]
 then
+  echo "Pushing to registry ${REGISTRY}..."
   docker tag ${PROJECT}:${VERSION} ${REGISTRY}/${PROJECT}:${VERSION}
   docker push ${REGISTRY}/${PROJECT}:${VERSION}
+  echo "Done"
 fi
