@@ -8,7 +8,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: StatefulSet
-    name: {{ .Values.drill.id }}-drillbit
+    name: {{ .Values.drill.id }}bit
   minReplicas: {{ .Values.drill.count }}
   maxReplicas: {{ .Values.drill.autoscale.maxCount }}
   targetCPUUtilizationPercentage: {{ .Values.drill.autoscale.cpuThreshold }}

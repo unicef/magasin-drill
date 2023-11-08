@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   namespace: {{ .Release.Namespace | quote }}
-  name: {{.Values.drill.id}}-drillbit
+  name: {{.Values.drill.id}}bit
 spec:
   serviceName: drill-service
   replicas: {{.Values.drill.count}}
@@ -79,22 +79,34 @@ spec:
                   {{- range .Values.drill.lifecycle.preStop.exec.command }}
                   - {{ . | quote }}
                   {{- end }}
-          {{- if .Values.drill.drillConf.override }}
+        {{- if .Values.drill.volumes.add }}
           volumeMounts:
+          {{- if .Values.drill.volumes.drillStorage.override }}
+            - mountPath: {{ .Values.drill.volumes.drillStorage.mountPath }}
+              name: drill-storage-plugin-secret
+              subPath: {{ .Values.drill.volumes.drillStorage.subPath }}
+          {{ end }}
             - mountPath: /opt/drill/conf/drill-override.conf
-              name: drill-config-cm
+              name: drill-config-overrides-cm
               subPath: drill-override.conf
             - mountPath: /opt/drill/conf/drill-env.sh
-              name: drill-config-cm
+              name: drill-config-overrides-cm
               subPath: drill-env.sh
-          {{ end }}
+        {{ end }}
       terminationGracePeriodSeconds: {{ .Values.drill.terminationGracePeriodSeconds }}
-      {{- if .Values.drill.drillConf.override }}
+      
+    {{- if .Values.drill.volumes.add }}
       volumes:
-        - name: drill-config-cm
-          configMap:
-            name: drill-config-cm
+      {{- if .Values.drill.volumes.drillStorage.override }}
+        - name: drill-storage-plugin-secret
+          secret:
+            secretName: {{ .Values.drill.volumes.drillStorage.secretName }}
       {{ end }}
+        - name: drill-config-overrides-cm
+          configMap:
+            name: drill-config-overrides-cm
+            defaultMode: 0700
+    {{ end }}
       initContainers:
         - name: zk-available
           image: busybox

@@ -4,9 +4,14 @@ repo: hub.docker.com/u/
 # Drill sub-section
 drill:
   # Name of the Drill cluster. Also used to create the ZK node for the Drill cluster
-  id: drillcluster1
-  # Kubernetes environment. Currently supported values: [gke, on-prem]
-  environment: gke
+  id: drill
+  
+  # Expose Drill Web UI outside of the cluster?
+  # This will open a port, so that the dill UI can accessed from outside of the cluster.
+  # Otherwise you can use kubectl port-forward to access the UI.
+  exposeWebService: false
+  # What kind of service [LoadBalancer|NodePort]
+  webServiceType: LoadBalancer
   # Number of Drill Pods which are launched in parallel and join to form a Drill Cluster
   count: 2
   # Total memory for each Drill pod
@@ -70,14 +75,7 @@ drill:
   # Number of seconds after which pods are forcefully killed
   # Note: Lower values may cause running queries to fail
   terminationGracePeriodSeconds: 60
-  # Drill Configuration can be overridden by mounting them on each Drill container.
-  # Edit the files in `conf` with your custom configurations
-  # Use `conf/createCM.sh` to create the ConfigMap
-  drillConf:
-    # Flag to turn-on / turn-off this option
-    override: false
-    # Name of the ConfigMap with Drill config files
-    configMapName: drill-config-override-cm
+
   # The size of the Drill cluster (number of Drill Pod replicas) can be autoscaled
   # With higher CPU utilization, more drill-bits are added automatically. And as the load goes down,
   # so do the number of drill-bits in the Drill Cluster (by gracefully shutting down)
@@ -88,6 +86,36 @@ drill:
     maxCount: 4
     # Target CPU Utilization Percentage
     cpuThreshold: 75
+
+
+  volumes:
+    # Make true if you want to add any volumes. Else, make false.
+    add: true
+    # Drill Configuration can be overridden by mounting them on each Drill container.
+    configOverrides:
+      # Contents of drill-override.conf
+      # This file follows the HOCON format
+      # https://github.com/lightbend/config/blob/master/HOCON.md
+      drillOverrideConf: |
+        exec.errors: { 
+            verbose: true
+        }
+      # Contents of drill-env.sh. This script is run prior to launching the drillbit
+      drillEnvSh: |
+        echo "Running drill-env.sh..."
+        export DRILL_PID_DIR="/opt/drill"
+        #...
+    
+    # Drill Storage Plugin can be overridden
+    # 
+    drillStorage:
+      override: false
+      secretName: drill-storage-plugin-secret
+      mountPath: /opt/drill/conf/storage-plugins-override.conf
+      subPath: storage-plugins-override.conf
+
+
+
 
 # ZooKeeper sub-section
 zookeeper:

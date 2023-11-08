@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -x
 
-namespace=default
-clustername=drillcluster1
+namespace=magasin-drill
+clustername=drill
 pods=$((`kubectl get pods -n $namespace |grep -i $clustername | wc -l` -1))
 
 for i in `seq 0 $pods`
