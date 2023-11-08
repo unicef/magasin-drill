@@ -96,10 +96,11 @@ drill:
       # Contents of drill-override.conf
       # This file follows the HOCON format
       # https://github.com/lightbend/config/blob/master/HOCON.md
+      # The available options are described in
+      # https://drill.apache.org/docs/configuration-options-introduction/
       drillOverrideConf: |
-        exec.errors: { 
-            verbose: true
-        }
+        drill.exec.options.exec.errors.verbose: true
+        
       # Contents of drill-env.sh. This script is run prior to launching the drillbit
       drillEnvSh: |
         echo "Running drill-env.sh..."

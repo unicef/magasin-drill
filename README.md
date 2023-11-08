@@ -119,7 +119,8 @@ kubectl create secret generic drill-storage-plugin-secret --from-file=storage-pl
 
 
 #### Override drill config
-You can enable config overriding by modifying the values of the config Overrides in your customized `values.yaml` 
+You can enable config overriding by modifying the values of the `drill.volumes.configOverrides` in your customized `values.yaml` file. Example:
+
 
 ```yaml
 # values.yaml
@@ -132,10 +133,15 @@ drill:
       # Contents of drill-override.conf
       # This file follows the HOCON format
       # https://github.com/lightbend/config/blob/master/HOCON.md
+      # The available options are described: 
+      # # https://drill.apache.org/docs/configuration-options-introduction/
+      #
+      # Alternatively on the web UI you can run the query:
+      #
+      # SELECT * FROM sys.boot;
+      #
       drillOverrideConf: |
-        exec.errors: { 
-            verbose: true
-        }
+        drill.exec.options.exec.errors.verbose: true
       # Contents of drill-env.sh 
       drillEnvSh: |
         echo "Running drill-env.sh..."
