@@ -14,15 +14,17 @@ This is an extended version of the originally chart created in [github.com/Agiri
 Drill Helm Charts can be deployed as simply as follows: 
 
 ```shell
-# helm install <release-name> drill/ [--namespace <namespace-name> --create-namespace]
+# helm install <release-name> drill/ [--namespace|-n <namespace-name> --create-namespace]
  helm install drill drill/ --namespace magasin-drill --create-namespace
+
 ```
 
-This will install drill within the namespace `magasin-drill`. If you skip `--namespace` and `--create-namespace` the chart is installed in the `default` namespace. 
+This will install drill within the namespace `magasin-drill`. If you skip `--namespace magasin-drill --create-namespace` the chart is installed in the `default` namespace. 
 
-You can check the setup went well if you can see the pods:
+You can list the pods by running:
 
 ```shell
+# kubectl get pods -n <namespace>
 kubectl get pods -n magasin-drill
 NAME         READY   STATUS    RESTARTS   AGE
 drillbit-0   1/1     Running   0          5m3s
@@ -30,11 +32,11 @@ drillbit-1   1/1     Running   0          5m3s
 zk-0         1/1     Running   0          5m3s 
 ```
 
-Once all the pods are `READY` with the value 1/1 and the `STATUS` `Running``, you can launch the Drill Web UI using the `launch_ui.sh` script:
+Once all the pods  have the READT value as `1/1` and the `STATUS` is `Running`, you can launch the Drill Web UI using the `launch_ui.sh` script:
 
 ```shell
-# ./scripts/launch_ui -n <namespace> 
-# namespace defaults to "magasin-drill"
+# ./scripts/launch_ui [-n <namespace>]
+#  where namespace defaults to "magasin-drill"
 ./scripts/launch_ui.sh 
 
 Open a browser at http://localhost:8087
@@ -47,9 +49,43 @@ Then open `http://localhost:8047` in a browser.
 
 ### Customizing the setup
 
-Helm Charts use `values.yaml` for providing default values to 'variables' used in the chart templates. These values may be overridden either by editing the `values.yaml` file or during `helm install`. 
+Helm Charts use `values.yaml` for providing default values to 'variables' used in the chart templates.  Refer to the [drill/values.yaml](drill/values.yaml) file for details on default values for the charts.
 
-Refer to the [drill/values.yaml](drill/values.yaml) file for details on default values for the charts.
+You can create a `values.yaml`` file to overrides some of the default values. For example, by default the helm chart launches 2 drillbits, but you can set it to 1.
+
+```yaml
+# values.yaml
+drill:
+  count: 1
+```
+
+Then you add the `-f filename.yaml` or `--values filename.yaml` to the install command earlier 
+
+```
+helm install drill drill/ -f values.yaml -n magasin-drill --create-namespace
+```
+
+If the setup already exist you can use `upgrade`:
+
+```shell
+helm upgrade drill drill/ -n magasin-drill -f values.yaml
+Release "drill" has been upgraded. Happy Helming!
+NAME: drill
+LAST DEPLOYED: Wed Nov  8 13:41:10 2023
+NAMESPACE: magasin-drill
+STATUS: deployed
+REVISION: 2
+TEST SUITE: None
+```
+
+Now, the cluster only has a drillbit:
+```shell
+kubectl get pods -n magasin-drill
+NAME         READY   STATUS    RESTARTS       AGE
+drillbit-0   0/1     Running   1 (22s ago)   156m
+zk-0         1/1     Running   0              157m
+```
+
 
 ### Override the storage plugin configuration
 
@@ -57,11 +93,12 @@ It is possible to deploy drill with a custom set of storage plugins (ie. connect
 
 To do that:
 
-1. Edit the configuration file: `drill/conf/storage-plugins-override.conf`.
+1. Edit the configuration file: `storage-plugins-override.conf`.
 
-2. Enable the storage plugin config overriding by setting to `true` the `drill.volumes.drillStorage.override` section in `drill/values.yaml` file.
+2. Enable the storage plugin config overriding by setting to `true` the `drill.volumes.drillStorage.override` section in your values file `values.yaml` file.
 
 ```yaml
+# values.yaml
 drill:
   volumes: 
     drillStorage:
@@ -72,12 +109,12 @@ drill:
 
 ```shell
 # ./scripts/create_secret.sh <namespace> 
-./scripts/create_secret.sh magasin-drill
+./scripts/create_secret.sh -n magasin-drill -f <config-file>
 ```
 or manually
 
 ```shell
-kubectl create secret generic drill-storage-plugin-secret --from-file=drill/conf/storage-plugins-override.conf --namespace <namespace>
+kubectl create secret generic drill-storage-plugin-secret --from-file=storage-plugins-override.conf --namespace <namespace>
 ```
 
 
@@ -115,21 +152,20 @@ By default, you can only access the Drill Web UI by performing a port forward to
 
 `kubectl port-forward --namespace <namespace> service/drill-service 8047:8047`
 
-For cloud based deployments, you can setup a `LoadBalancer`` type [service](https://kubernetes.io/docs/concepts/services-networking/service/). This allows to access the drill web UI from outside the cluster through a public IP. Basically, this type of service acts like a proxy which internally redirects the HTTP requests to any of the available drill pods.
+For cloud based deployments, you can setup a `LoadBalancer` type [service](https://kubernetes.io/docs/concepts/services-networking/service/). This allows to access the drill web UI from outside the cluster through a public IP. Basically, this type of service acts like a proxy which internally redirects the HTTP requests to any of the available drill pods.
 
-To enable the service in your values.yaml in the `drill.environment` section change from `on-prem` to `public`.
+To enable the service in your `values.yaml` in the `drill.environment` section change from `on-prem` to `public`.
 
 ```yaml
 # values.yaml
 drill:
-  ...
-  ...
-  environment: public
-  ...
-  ...
+  #...
+  #...
+  exposeWebService: true
+  webServiceType: LoadBalancer
+  #...
+  #...
 ```
-
-
 
 ### Deploy multiple drill clusters
 
@@ -209,7 +245,7 @@ Successfully packaged chart and saved it to: /xxx/magasin-drill/drill-1.0.0.tgz
 Drill Helm Charts can be uninstalled as follows: 
 
 ```shell
-# helm [uninstall|delete] <HELM_INSTALL_RELEASE_NAME>
+# helm [uninstall|delete] <HELM_INSTALL_RELEASE_NAME> -n <namespace>
 helm delete drill1
 helm delete drill2
 ```
