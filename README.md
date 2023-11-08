@@ -154,7 +154,7 @@ By default, you can only access the Drill Web UI by performing a port forward to
 
 For cloud based deployments, you can setup a `LoadBalancer` type [service](https://kubernetes.io/docs/concepts/services-networking/service/). This allows to access the drill web UI from outside the cluster through a public IP. Basically, this type of service acts like a proxy which internally redirects the HTTP requests to any of the available drill pods.
 
-To enable the service in your `values.yaml` in the `drill.environment` section change from `on-prem` to `public`.
+To enable the service, modify the flag `exposeWebService` in your `values.yaml` in the `drill` section.
 
 ```yaml
 # values.yaml
@@ -166,9 +166,27 @@ drill:
   #...
   #...
 ```
+and proceed to upgrade the setup.
+
+Alternatively, you can upgrade your setup just changing the value
+```shell
+ helm upgrade drill drill/ -n magasin-drill --set drill.exposeWebService=true
+```
+Now the drill-web-svc shall appear. 
+```shell
+ kubectl get services -n magasin-drill
+NAME            TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)                                  AGE
+drill-service   ClusterIP      10.96.253.218   <none>          8047/TCP,31010/TCP,31011/TCP,31012/TCP   28s
+drill-web-svc   LoadBalancer   10.96.20.170    23.16.193.208   8047:31889/TCP,31010:31926/TCP           28s
+zk-service      ClusterIP      10.96.54.14     <none>          2181/TCP,2888/TCP,3888/TCP               2
+```
+
+You can open http://<external-ip>:8047 to access the.
+
+Exposing the cluster externally as this **not recommended** without enabling the authentication. You can read on [drill documentation about how to enable authentication](https://drill.apache.org/docs/securing-drill-introduction/)
+
 
 ### Deploy multiple drill clusters
-
 Kubernetes [Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) can be used when more that one Drill Cluster needs to be created. The `default` namespace is used by default. 
 
 ```shell
