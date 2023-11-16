@@ -45,8 +45,9 @@ docker buildx build --builder=magasin-builder --platform linux/amd64 --build-arg
 
 if [[ $? -eq 0 ]]
 then
+
   echo "Pushing to registry ${REGISTRY}..."
-  docker tag ${PROJECT}:${VERSION} ${REGISTRY}/${PROJECT}:${VERSION}
-  docker push ${REGISTRY}/${PROJECT}:${VERSION}
-  echo "Done"
+#  docker tag ${PROJECT}:${VERSION} ${REGISTRY}/${PROJECT}:${VERSION}
+#  docker push ${REGISTRY}/${PROJECT}:${VERSION}
+#  echo "Done"
 fi

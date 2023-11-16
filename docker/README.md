@@ -21,6 +21,12 @@ cd docker/zookeeper
 ./build.sh merlos 3.9.1
 ```
 
+In this image: 
+* zookeeper is run by the user `zk`
+* Data is kept in `/var/lib/zookeeper`
+* Output logs are kept in `/var/log/zookeeper/`
+
+
 ### Build Drill
 
 Similarly,  the folder `docker/drill` contains the `build.sh` script that  builds, tags and uploads a docker image. It also takes two arguments:
