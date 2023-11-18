@@ -11,15 +11,15 @@ This is an extended version of the originally chart created in [github.com/Agiri
 
 ## Install
 
-Drill Helm Charts can be deployed as simply as follows: 
+
+After cloning this repo, Apache Drill helm chart can be deployed as simply as follows: 
 
 ```shell
 # helm install <release-name> drill/ [--namespace|-n <namespace-name> --create-namespace]
  helm install drill drill/ --namespace magasin-drill --create-namespace
-
 ```
 
-This will install drill within the namespace `magasin-drill`. If you skip `--namespace magasin-drill --create-namespace` the chart is installed in the `default` namespace. 
+This will install Apache Drill within the namespace `magasin-drill`. If you skip `--namespace magasin-drill --create-namespace` the chart is installed in the `default` namespace. 
 
 You can list the pods by running:
 
@@ -277,22 +277,30 @@ Note that `LoadBalancer` and a few other Kubernetes resources may take a while t
 
 ## Building custom docker images
 
-The [`docker/`](docker/) directory contains everything required to build and customize Docker images of Apache Drill and Apache ZooKeeper included in the helm chart.
+The [`docker/`](docker/) directory contains everything required to build and customize the Docker images of Apache Drill and Apache ZooKeeper included in the helm chart.
 
 Already built docker images are available in [Docker Hub](https://hub.docker.com/u/merlos/). 
 
-Once you have updated the images, you need to update the `values.yaml` file 
-In the `drill`` section update:
+Once you have updated the images, you need to replace the 'image' option in your `values.yaml` file.
+
+To update the drill image edit the `drill.image` value:
 
 ```yaml
-  image: merlos/drill:1.21.1
+drill:
+  #...
+  # Change the line below with your custom image
+  image: merlos/drill:1.21.1 
 ```
 
-In the zookeeper section:
+And, in the zookeeper section:
 ```yaml
+zookeper: 
+  #...
+  #...
+  # Change the line below with your custom image
   image: merlos/zookeeper:3.9.1
-
 ```
+
 
 ## Troubleshooting
 
