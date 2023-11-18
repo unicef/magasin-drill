@@ -23,9 +23,12 @@ cd docker/zookeeper
 
 In this image: 
 * zookeeper is run by the user `zk`
+* zookeper is installed in `/opt/zookeeper`
 * Data is kept in `/var/lib/zookeeper`
 * Output logs are kept in `/var/log/zookeeper/`
 
+
+You have som images available in https://hub.docker.com/r/merlos/zookeeper
 
 ### Build Drill
 
