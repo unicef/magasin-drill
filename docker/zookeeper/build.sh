@@ -1,14 +1,12 @@
 #!/bin/bash
 
-set -x 
-
 if [[ -z $1 || -z $2 ]]; then
   echo "Usage: $0 REGISTRY VERSION"
   echo "  REGISTRY: The registry where the package will be published." 
   echo "            Example: your username in dockerhub"
-  echo "  VERSION: The version number of the drill to be created."
+  echo "  VERSION: The version number of the zookeeper to be created."
   echo "           Example: 3.9.1"
-  echo "           Available versions on https://dlcdn.apache.org/drill/"
+  echo "           Available versions on https://downloads.apache.org/zookeeper"
   echo 
   echo "  Example:"
   echo "         $0 merlos 3.9.1"
@@ -16,11 +14,12 @@ if [[ -z $1 || -z $2 ]]; then
   exit 1
 fi
 
+set -x 
 REGISTRY=$1
 VERSION=$2
 PROJECT=zookeeper
 
-# Build for amd64 (ie intel)
+# Multi platform build
 # https://docs.docker.com/build/guide/multi-platform/#buildx-setupa
 
 # Check if magasin-builder buildx instance exists
@@ -42,12 +41,10 @@ fi
 
 docker buildx build --builder=magasin-builder --platform linux/amd64 --build-arg VERSION=${VERSION} -t ${PROJECT}:${VERSION} --load  . 
 
-
-if [[ $? -eq 0 ]]
-then
-
+# If there was no error building the image
+if [[ $? -eq 0 ]] then
   echo "Pushing to registry ${REGISTRY}..."
-#  docker tag ${PROJECT}:${VERSION} ${REGISTRY}/${PROJECT}:${VERSION}
-#  docker push ${REGISTRY}/${PROJECT}:${VERSION}
-#  echo "Done"
+  docker tag ${PROJECT}:${VERSION} ${REGISTRY}/${PROJECT}:${VERSION}
+  docker push ${REGISTRY}/${PROJECT}:${VERSION}
+  echo "Done"
 fi
