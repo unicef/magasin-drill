@@ -45,3 +45,13 @@ Example:
 cd docker/drill
 ./build.sh merlos 1.21.1
 ```
+
+Where merlos is a user in dockerhub and 1.21.1 is the version of Drill. For versions older than 1.19.0 you may need to tweak the 
+
+In this image: 
+* drill is run by the user `drill`
+* drill is installed in `/opt/drill`
+* Output logs are kept in `/var/log/drill/`
+
+
+You have some images available on https://hub.docker.com/r/merlos/drill/tags
