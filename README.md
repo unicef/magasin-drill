@@ -187,9 +187,9 @@ drill-web-svc   LoadBalancer   10.96.20.170    23.16.193.208   8047:31889/TCP,31
 zk-service      ClusterIP      10.96.54.14     <none>          2181/TCP,2888/TCP,3888/TCP               2
 ```
 
-You can open http://<external-ip>:8047 to access the.
+You can open http://[external-ip]:8047 to access the cluster.
 
-Exposing the cluster externally as this **not recommended** without enabling the authentication. You can read on [drill documentation about how to enable authentication](https://drill.apache.org/docs/securing-drill-introduction/)
+Exposing the cluster externally as this **not recommended** without enabling the authentication. Anyone will be able to access your drill!!! You can read on [drill documentation about how to enable authentication](https://drill.apache.org/docs/securing-drill-introduction/)
 
 
 ### Deploy multiple drill clusters
@@ -359,7 +359,7 @@ In this case, among the info, we see the line bellow, that tells us that the dri
 /opt/drill/drillbit.pid file is present but drillbit is not running.
 ```
 
-But this is not enough info. Another thing we can  try is to display the logs:
+But this is not enough info. Another thing we can try is to display the logs:
 
 ```shell
 # kubectl logs <pod> -n <namespace> -f
@@ -374,7 +374,7 @@ Running drill-env.sh...
   DRILL_HEAP=1G
   DRILL_MAX_DIRECT_MEMORY=3G
   DRILLBIT_CODE_CACHE_SIZE=768m
-Starting drillbit, logging to /opt/drill/log/drillbit.out
+Starting drillbit, logging to /var/log/drill/drillbit.out
 Running drill-env.sh...
 [WARN] Only DRILLBIT_MAX_PROC_MEM is defined. Auto-configuring for Heap & Direct memory
 [INFO] Attempting to start up Drill with the following settings
@@ -391,9 +391,9 @@ The `-f` argument will display new logs continuously. In this case, these logs d
 # kubectl exec <pod> -n <namespace> -ti -- <command> 
 kubectl exec drillbit-0 -n magasin-drill -ti -- /bin/bash
 ```
-This command will launc a shell within the pod. `-ti` is to allow interactive mode.
+This command will launch a shell within the pod. `-ti` is to allow interactive mode.
 
-Within the shell we can expore the `/opt/drill/conf` and `/opt/drill/log` folders.
+Within the shell we can explore the `/opt/drill/conf` and `/var/log/drill/` folders.
 
 ```shell
 
@@ -415,7 +415,7 @@ The `drill-override.conf` is the custom configuration you set in `values.yaml`.
 
 In the logs folder we have two files:
 ```
-root@drillbit-0 conf]# cd /opt/drill/log/
+root@drillbit-0 conf]# cd /var/log/drill/
 [root@drillbit-0 log]# ls
 drillbit.log  drillbit.out  drillbit_queries.json
 [root@drillbit-0 log]# 
