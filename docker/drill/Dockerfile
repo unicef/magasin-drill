@@ -11,10 +11,12 @@ RUN apt-get install -y openjdk-17-jre jed procps
 RUN apt clean
 
 # Add user and group drill
-RUN groupadd -r drill && useradd -r -g drill drill
+RUN groupadd -r drill && useradd -r -d /var/lib/drill -g drill drill
+
 
 # Create the required folders assign the permissions to the folders
 RUN mkdir /opt/drill && chown drill /opt/drill 
+RUN mkdir /var/lib/drill  && chown drill /var/lib/drill && chgrp drill /var/lib/drill && chmod 700 /var/lib/drill
 RUN mkdir /var/log/drill && chown drill /var/log/drill && chgrp drill /var/log/drill && chmod 700 /var/log/drill
 
 
@@ -25,7 +27,7 @@ RUN rm -f /tmp/apache-drill-$VERSION.tar.gz
 
 # Change conf folder owner as some files are required to be created tmporarily.
 RUN chgrp -v -R drill /opt/drill
-RUN chown drill /opt/drill/conf
+RUN chown -R drill /opt/drill/conf 
 
 # Test Drill
 #RUN echo "select * from sys.version;" > /tmp/version.sql

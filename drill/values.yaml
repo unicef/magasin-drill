@@ -104,7 +104,11 @@ drill:
       # Contents of drill-env.sh. This script is run prior to launching the drillbit
       drillEnvSh: |
         echo "Running drill-env.sh..."
+        # Display some info about the runtime
+        echo PATH=$PATH
+        echo User=`whoami`
         export DRILL_PID_DIR="/opt/drill"
+
         #...
     
     # Drill Storage Plugin can be overridden
