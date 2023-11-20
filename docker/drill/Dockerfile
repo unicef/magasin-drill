@@ -14,7 +14,7 @@ RUN apt clean
 RUN groupadd -r drill && useradd -r -g drill drill
 
 # Create the required folders assign the permissions to the folders
-RUN mkdir /opt/drill & chown drill /opt/drill 
+RUN mkdir /opt/drill && chown drill /opt/drill 
 RUN mkdir /var/log/drill && chown drill /var/log/drill && chgrp drill /var/log/drill && chmod 700 /var/log/drill
 
 
