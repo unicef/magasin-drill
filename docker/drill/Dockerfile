@@ -7,7 +7,7 @@ RUN echo $MIRROR
 
 # Install Pre-Requisite Packages
 RUN apt-get update
-RUN apt-get install -y openjdk-17-jre jed procps
+RUN apt-get install -y openjdk-17-jre jed procps stress
 RUN apt clean
 
 # Add user and group drill
