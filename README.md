@@ -482,6 +482,37 @@ exec.errors: {
 Effectively that is the case.
 Now, we just need to update the `values.yaml` file and install again the chart.
 
+### Error: ImagePullBackOff in minikube
+
+For testing purposes you may be running your cluster in [minikube](https://minikube.sigs.k8s.io/). We have experimented  `Error: ImagePullBackOff` errors. 
+
+For example after running
+
+```shell
+kubectl describe pods zk-0 -n magasin-drill
+```
+
+You may see something like:
+```
+Events:
+  Type     Reason     Age                  From               Message
+  ----     ------     ----                 ----               -------
+  Normal   Scheduled  2m40s                default-scheduler  Successfully assigned magasin-drill/zk-0 to minikube
+  Warning  Failed     37s                  kubelet            Failed to pull image "merlos/zookeeper:3.9.1": rpc error: code = Unknown desc = context deadline exceeded
+  Warning  Failed     37s                  kubelet            Error: ErrImagePull
+  Normal   BackOff    37s                  kubelet            Back-off pulling image "merlos/zookeeper:3.9.1"
+  Warning  Failed     37s                  kubelet            Error: ImagePullBackOff
+  Normal   Pulling    22s (x2 over 2m40s)  kubelet            Pulling image "merlos/zookeeper:3.9.1"
+
+```
+In this case, you can fix the issue by pulling the image manually using the following command:
+
+```shell
+# minikube image pull <image-name>
+minikube image pull merlos/zookeeper:3.9.1
+minikube image pull merlos/drill:1.21.1
+```
+These will download the images locally so they'll be available. Use `minikube image ls` to view the images available and `minikube image remove <image-name>` to remove them.
 
 ## The chart structure
 Apache Drill Helm charts are organized as a collection of files inside of the `drill/` directory. As Drill depends on [Apache Zookeeper](https://zookeeper.apache.org/) for cluster co-ordination, a zookeeper chart is inside the dependencies folder ['drill/charts'](drill/charts/). The Zookeeper chart follows a similar structure as the Drill chart.
