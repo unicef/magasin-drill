@@ -47,6 +47,20 @@ Forwarding from [::1]:8047 -> 8047
 
 Then open `http://localhost:8047` in a browser.
 
+## Chart version
+
+The chart appVersion displays the drill and zookeper versions, respectively.
+For example:
+
+```shell
+helm list -n magasin-drill
+NAME 	NAMESPACE    	REVISION	UPDATED                            	STATUS  	CHART      	APP VERSION 
+drill	magasin-drill	1       	2023-11-20 09:12:48.88172 +0300 EAT	deployed	drill-0.6.0	1.21.1-3.9.1
+```
+
+The helm chart version 0.6.0 comes with Apache Drill 1.21 and Zookeper 3.9.1.
+
+
 ### Customizing the setup
 
 Helm Charts use `values.yaml` for providing default values to 'variables' used in the chart templates.  Refer to the [drill/values.yaml](drill/values.yaml) file for details on default values for the charts.
