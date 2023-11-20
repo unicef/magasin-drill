@@ -52,6 +52,7 @@ In this image:
 * drill is run by the user `drill`
 * drill is installed in `/opt/drill`
 * Output logs are kept in `/var/log/drill/`
+* Copies the two jars included in the `jar/` folder (azure-storage and handoop-azure)
 
 
 You have some images available on https://hub.docker.com/r/merlos/drill/tags
