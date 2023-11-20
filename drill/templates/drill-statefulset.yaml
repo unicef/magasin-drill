@@ -43,7 +43,7 @@ spec:
             - name: KUBERNETES_CONTAINER
               value: "true"
             - name: POD_NAME
-              value: "drill-bit"
+              value: "drillbit"
             - name: DRILL_ZK_ROOT
               value: {{.Values.drill.id}}
             - name: DRILL_MAX_MEMORY
@@ -105,7 +105,7 @@ spec:
         - name: drill-config-overrides-cm
           configMap:
             name: drill-config-overrides-cm
-            defaultMode: 0700
+            defaultMode: 0766
     {{ end }}
       initContainers:
         - name: zk-available

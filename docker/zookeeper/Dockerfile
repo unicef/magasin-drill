@@ -1,4 +1,4 @@
-FROM centos:7
+FROM debian:stable-slim
 
 ARG VERSION
 RUN echo $VERSION
@@ -6,20 +6,31 @@ ARG MIRROR=https://downloads.apache.org/zookeeper
 RUN echo $MIRROR
 
 # Install Pre-Requisite Packages
-RUN yum install -y java-1.8.0-openjdk-devel vim; yum clean all ; rm -rf /var/cache/yum
+RUN apt-get update
+RUN apt-get install -y openjdk-17-jre jed procps
+RUN apt clean
 
-# Configure User Login
-RUN echo 'root:drill' | chpasswd
+# Add user and group zk
+RUN groupadd -r zk && useradd -r -g zk zk
 
-# Install ZooKeeper
+# Create zookeeper required folders 
+RUN mkdir /opt/zookeeper 
+RUN mkdir /var/lib/zookeeper && chown zk /var/lib/zookeeper && chgrp zk /var/lib/zookeeper && chmod 700 /var/lib/zookeeper
+RUN mkdir /var/log/zookeeper && chown zk /var/log/zookeeper && chgrp zk /var/log/zookeeper && chmod 700 /var/log/zookeeper
+
+# Install Zookeeper
 ADD $MIRROR/zookeeper-$VERSION/apache-zookeeper-${VERSION}-bin.tar.gz /tmp/
-RUN mkdir /opt/zookeeper
 RUN tar -xzf /tmp/apache-zookeeper-${VERSION}-bin.tar.gz --directory=/opt/zookeeper --strip-components 1
 RUN rm -f /tmp/apache-zookeeper-${VERSION}-bin.tar.gz
 
-# Configure ZooKeeper
-RUN printf "tickTime=2000\ndataDir=/var/lib/zookeeper\nclientPort=2181" > /opt/zookeeper/conf/zoo.cfg
+# Copy the configuration of ZooKeeper
+COPY zoo.cfg /opt/zookeeper/conf/zoo.cfg
+
+# Set logs in /var/logs
+ENV ZOO_LOG_DIR=/var/log/zookeeper 
 
 # Start ZooKeeper
-COPY start.sh /usr/bin/start.sh
-ENTRYPOINT /usr/bin/start.sh
+COPY start.sh /opt/zookeeper/start.sh
+
+USER zk
+ENTRYPOINT /opt/zookeeper/start.sh

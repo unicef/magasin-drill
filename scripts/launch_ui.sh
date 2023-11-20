@@ -47,7 +47,7 @@ done
 # Stop on error
 set -e
 echo 
-echo "Open a browser at http://localhost:8087"
+echo "Open a browser at http://localhost:8047"
 echo
 kubectl port-forward --namespace $NAMESPACE service/drill-service 8047:8047
 

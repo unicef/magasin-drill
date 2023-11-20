@@ -11,15 +11,15 @@ This is an extended version of the originally chart created in [github.com/Agiri
 
 ## Install
 
-Drill Helm Charts can be deployed as simply as follows: 
+
+After cloning this repo, Apache Drill helm chart can be deployed as simply as follows: 
 
 ```shell
 # helm install <release-name> drill/ [--namespace|-n <namespace-name> --create-namespace]
  helm install drill drill/ --namespace magasin-drill --create-namespace
-
 ```
 
-This will install drill within the namespace `magasin-drill`. If you skip `--namespace magasin-drill --create-namespace` the chart is installed in the `default` namespace. 
+This will install Apache Drill within the namespace `magasin-drill`. If you skip `--namespace magasin-drill --create-namespace` the chart is installed in the `default` namespace. 
 
 You can list the pods by running:
 
@@ -46,6 +46,20 @@ Forwarding from [::1]:8047 -> 8047
 ```
 
 Then open `http://localhost:8047` in a browser.
+
+## Chart version
+
+The chart appVersion displays the drill and zookeper versions, respectively.
+For example:
+
+```shell
+helm list -n magasin-drill
+NAME 	NAMESPACE    	REVISION	UPDATED                            	STATUS  	CHART      	APP VERSION 
+drill	magasin-drill	1       	2023-11-20 09:12:48.88172 +0300 EAT	deployed	drill-0.6.0	1.21.1-3.9.1
+```
+
+The helm chart version 0.6.0 comes with Apache Drill 1.21 and Zookeper 3.9.1.
+
 
 ### Customizing the setup
 
@@ -187,9 +201,9 @@ drill-web-svc   LoadBalancer   10.96.20.170    23.16.193.208   8047:31889/TCP,31
 zk-service      ClusterIP      10.96.54.14     <none>          2181/TCP,2888/TCP,3888/TCP               2
 ```
 
-You can open http://<external-ip>:8047 to access the.
+You can open http://[external-ip]:8047 to access the cluster.
 
-Exposing the cluster externally as this **not recommended** without enabling the authentication. You can read on [drill documentation about how to enable authentication](https://drill.apache.org/docs/securing-drill-introduction/)
+Exposing the cluster externally as this **not recommended** without enabling the authentication. Anyone will be able to access your drill!!! You can read on [drill documentation about how to enable authentication](https://drill.apache.org/docs/securing-drill-introduction/)
 
 
 ### Deploy multiple drill clusters
@@ -277,22 +291,30 @@ Note that `LoadBalancer` and a few other Kubernetes resources may take a while t
 
 ## Building custom docker images
 
-The [`docker/`](docker/) directory contains everything required to build and customize Docker images of Apache Drill and Apache ZooKeeper included in the helm chart.
+The [`docker/`](docker/) directory contains everything required to build and customize the Docker images of Apache Drill and Apache ZooKeeper included in the helm chart.
 
 Already built docker images are available in [Docker Hub](https://hub.docker.com/u/merlos/). 
 
-Once you have updated the images, you need to update the `values.yaml` file 
-In the `drill`` section update:
+Once you have updated the images, you need to replace the 'image' option in your `values.yaml` file.
+
+To update the drill image edit the `drill.image` value:
 
 ```yaml
-  image: merlos/drill:1.21.1
+drill:
+  #...
+  # Change the line below with your custom image
+  image: merlos/drill:1.21.1 
 ```
 
-In the zookeeper section:
+And, in the zookeeper section:
 ```yaml
+zookeper: 
+  #...
+  #...
+  # Change the line below with your custom image
   image: merlos/zookeeper:3.9.1
-
 ```
+
 
 ## Troubleshooting
 
@@ -359,7 +381,7 @@ In this case, among the info, we see the line bellow, that tells us that the dri
 /opt/drill/drillbit.pid file is present but drillbit is not running.
 ```
 
-But this is not enough info. Another thing we can  try is to display the logs:
+But this is not enough info. Another thing we can try is to display the logs:
 
 ```shell
 # kubectl logs <pod> -n <namespace> -f
@@ -374,7 +396,7 @@ Running drill-env.sh...
   DRILL_HEAP=1G
   DRILL_MAX_DIRECT_MEMORY=3G
   DRILLBIT_CODE_CACHE_SIZE=768m
-Starting drillbit, logging to /opt/drill/log/drillbit.out
+Starting drillbit, logging to /var/log/drill/drillbit.out
 Running drill-env.sh...
 [WARN] Only DRILLBIT_MAX_PROC_MEM is defined. Auto-configuring for Heap & Direct memory
 [INFO] Attempting to start up Drill with the following settings
@@ -391,9 +413,9 @@ The `-f` argument will display new logs continuously. In this case, these logs d
 # kubectl exec <pod> -n <namespace> -ti -- <command> 
 kubectl exec drillbit-0 -n magasin-drill -ti -- /bin/bash
 ```
-This command will launc a shell within the pod. `-ti` is to allow interactive mode.
+This command will launch a shell within the pod. `-ti` is to allow interactive mode.
 
-Within the shell we can expore the `/opt/drill/conf` and `/opt/drill/log` folders.
+Within the shell we can explore the `/opt/drill/conf` and `/var/log/drill/` folders.
 
 ```shell
 
@@ -415,7 +437,7 @@ The `drill-override.conf` is the custom configuration you set in `values.yaml`.
 
 In the logs folder we have two files:
 ```
-root@drillbit-0 conf]# cd /opt/drill/log/
+root@drillbit-0 conf]# cd /var/log/drill/
 [root@drillbit-0 log]# ls
 drillbit.log  drillbit.out  drillbit_queries.json
 [root@drillbit-0 log]# 
@@ -474,6 +496,37 @@ exec.errors: {
 Effectively that is the case.
 Now, we just need to update the `values.yaml` file and install again the chart.
 
+### Error: ImagePullBackOff in minikube
+
+For testing purposes you may be running your cluster in [minikube](https://minikube.sigs.k8s.io/). We have experimented  `Error: ImagePullBackOff` errors. 
+
+For example after running
+
+```shell
+kubectl describe pods zk-0 -n magasin-drill
+```
+
+You may see something like:
+```
+Events:
+  Type     Reason     Age                  From               Message
+  ----     ------     ----                 ----               -------
+  Normal   Scheduled  2m40s                default-scheduler  Successfully assigned magasin-drill/zk-0 to minikube
+  Warning  Failed     37s                  kubelet            Failed to pull image "merlos/zookeeper:3.9.1": rpc error: code = Unknown desc = context deadline exceeded
+  Warning  Failed     37s                  kubelet            Error: ErrImagePull
+  Normal   BackOff    37s                  kubelet            Back-off pulling image "merlos/zookeeper:3.9.1"
+  Warning  Failed     37s                  kubelet            Error: ImagePullBackOff
+  Normal   Pulling    22s (x2 over 2m40s)  kubelet            Pulling image "merlos/zookeeper:3.9.1"
+
+```
+In this case, you can fix the issue by pulling the image manually using the following command:
+
+```shell
+# minikube image pull <image-name>
+minikube image pull merlos/zookeeper:3.9.1
+minikube image pull merlos/drill:1.21.1
+```
+These will download the images locally so they'll be available. Use `minikube image ls` to view the images available and `minikube image remove <image-name>` to remove them.
 
 ## The chart structure
 Apache Drill Helm charts are organized as a collection of files inside of the `drill/` directory. As Drill depends on [Apache Zookeeper](https://zookeeper.apache.org/) for cluster co-ordination, a zookeeper chart is inside the dependencies folder ['drill/charts'](drill/charts/). The Zookeeper chart follows a similar structure as the Drill chart.

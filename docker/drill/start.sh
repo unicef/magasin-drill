@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Be verbose 
+set -x
 DRILL_HOME="/opt/drill"
 DRILL_ENV_FILE="${DRILL_HOME}/conf/distrib-env.sh"
 DRILL_CONF_FILE="${DRILL_HOME}/conf/drill-distrib.conf"
@@ -39,6 +41,9 @@ fi
 
 # Drillbit status
 ${DRILL_HOME}/bin/drillbit.sh status
+
+# Stop being verbose
+set +x
 
 # Keep container alive
 while true; do sleep 5; done

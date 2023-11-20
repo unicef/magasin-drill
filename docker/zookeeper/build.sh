@@ -1,26 +1,74 @@
 #!/bin/bash
 
-set -x 
+# Set default values
+PROJECT=zookeeper
+VERBOSE=false
+TAG=""
+PUSH=false
 
-if [[ -z $1 || -z $2 ]]; then
-  echo "Usage: $0 REGISTRY VERSION"
-  echo "  REGISTRY: The registry where the package will be published." 
-  echo "            Example: your username in dockerhub"
-  echo "  VERSION: The version number of the drill to be created."
-  echo "           Example: 3.9.1"
-  echo "           Available versions on https://dlcdn.apache.org/drill/"
+# Function to display usage
+usage() {
+  echo "Usage: $0 -r REGISTRY -v VERSION [-t TAG] [-p]"
+  echo "  -r REGISTRY: The registry where the package will be published."
+  echo "               Example: your username in dockerhub"
+  echo "  -v VERSION: The version number of the zookeeper to be created."
+  echo "              Example: 3.9.1"
+  echo "              Available versions on https://downloads.apache.org/zookeeper"
+  echo "  -t TAG: Optional tag for the image. If not provided, defaults to the VERSION."
+  echo "  -p: Optional flag to push the built image to the registry."
   echo 
   echo "  Example:"
-  echo "         $0 merlos 3.9.1"
+  echo "         $0 -r merlos -v 3.9.1"
+  echo "         $0 -r merlos -v 3.9.1 -t 3.9.1-deb -p"
   echo 
   exit 1
+}
+
+# Parse options
+while getopts ":r:v:t:p" opt; do
+  case $opt in
+    r)
+      REGISTRY=$OPTARG
+      ;;
+    v)
+      VERSION=$OPTARG
+      ;;
+    t)
+      TAG=$OPTARG
+      ;;
+    p)
+      PUSH=true
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      usage
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      usage
+      ;;
+  esac
+done
+
+# Check if mandatory options are provided
+if [[ -z $REGISTRY || -z $VERSION ]]; then
+  usage
 fi
 
-REGISTRY=$1
-VERSION=$2
-PROJECT=zookeeper
+# Set TAG to VERSION if TAG is not provided
+if [[ -z $TAG ]]; then
+  TAG=$VERSION
+fi
 
-# Build for amd64 (ie intel)
+
+echo PROJECT=$PROJECT
+echo VERSION=$VERSION
+echo REGISTRT=$REGISTRY
+echo TAG=$TAG
+echo PUSH=$PUSH 
+
+set -x 
+# Multi platform build
 # https://docs.docker.com/build/guide/multi-platform/#buildx-setupa
 
 # Check if magasin-builder buildx instance exists
@@ -40,13 +88,17 @@ else
     echo "magasin-builder buildx instance already exists."
 fi
 
-docker buildx build --builder=magasin-builder --platform linux/amd64 --build-arg VERSION=${VERSION} -t ${PROJECT}:${VERSION} --load  . 
+docker buildx build --builder=magasin-builder --platform linux/amd64 --build-arg VERSION=${VERSION} -t ${PROJECT}:${TAG} --load  . 
 
 
-if [[ $? -eq 0 ]]
-then
-  echo "Pushing to registry ${REGISTRY}..."
-  docker tag ${PROJECT}:${VERSION} ${REGISTRY}/${PROJECT}:${VERSION}
-  docker push ${REGISTRY}/${PROJECT}:${VERSION}
-  echo "Done"
+# If there was no error building the image
+if [[ $? -eq 0 ]]; then
+  if [[ $PUSH == true ]]; then
+    echo "Pushing to registry ${REGISTRY}..."
+    docker tag ${PROJECT}:${TAG} ${REGISTRY}/${PROJECT}:${TAG}
+    docker push ${REGISTRY}/${PROJECT}:${TAG}
+    echo "Done"
+  else
+    echo "Build successful. Image not pushed to registry as -p flag not provided."
+  fi
 fi
