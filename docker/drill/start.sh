@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -x
 DRILL_HOME="/opt/drill"
 DRILL_ENV_FILE="${DRILL_HOME}/conf/distrib-env.sh"
 DRILL_CONF_FILE="${DRILL_HOME}/conf/drill-distrib.conf"
