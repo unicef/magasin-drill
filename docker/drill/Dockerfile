@@ -14,7 +14,6 @@ RUN apt clean
 RUN groupadd -r drill && useradd -r -g drill drill
 
 # Create the required folders assign the permissions to the folders
-
 RUN mkdir /opt/drill & chown drill /opt/drill 
 RUN mkdir /var/log/drill && chown drill /var/log/drill && chgrp drill /var/log/drill && chmod 700 /var/log/drill
 
@@ -22,12 +21,11 @@ RUN mkdir /var/log/drill && chown drill /var/log/drill && chgrp drill /var/log/d
 # Install Drill
 ADD ${MIRROR}/dist/drill/$VERSION/apache-drill-${VERSION}.tar.gz /tmp/apache-drill-$VERSION.tar.gz
 RUN tar -xzf /tmp/apache-drill-$VERSION.tar.gz -C/opt/drill --strip=1
-RUN chgrp -v -R drill /opt/drill
+RUN rm -f /tmp/apache-drill-$VERSION.tar.gz
 
 # Change conf folder owner as some files are required to be created tmporarily.
-# TODO
+RUN chgrp -v -R drill /opt/drill
 RUN chown drill /opt/drill/conf
-RUN rm -f /tmp/apache-drill-$VERSION.tar.gz
 
 # Test Drill
 #RUN echo "select * from sys.version;" > /tmp/version.sql
@@ -38,7 +36,7 @@ COPY distrib-env.sh drill-distrib.conf /opt/drill/conf/
 COPY isLive.sh isReady.sh preStop.sh /opt/drill/bin/
 COPY start.sh /opt/drill/start.sh
 
-# Copy jars
+# Copy local jars
 COPY jars/* /opt/drill/jars/3rdparty/
 
 # Set user to run the service
