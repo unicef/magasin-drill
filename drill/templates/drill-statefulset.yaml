@@ -105,7 +105,7 @@ spec:
         - name: drill-config-overrides-cm
           configMap:
             name: drill-config-overrides-cm
-            defaultMode: 0700
+            defaultMode: 0744
     {{ end }}
       initContainers:
         - name: zk-available
