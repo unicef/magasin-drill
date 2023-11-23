@@ -8,6 +8,12 @@ RUN echo $MIRROR
 # Install Pre-Requisite Packages
 RUN apt-get update
 RUN apt-get install -y openjdk-17-jre jed procps
+
+# Display project name
+RUN apt-get install -y figlet
+RUN echo "figlet Drill && echo \"\nDockerized for magasin (https://github.com/unicef/magasin) \n\n\"" > /etc/bash.bashrc
+
+# Clean apt cache
 RUN apt clean
 
 # Add user and group zk
