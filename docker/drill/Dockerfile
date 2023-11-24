@@ -8,17 +8,21 @@ RUN echo $MIRROR
 # Install Pre-Requisite Packages
 RUN apt-get update
 RUN apt-get install -y openjdk-17-jre jed procps stress
+
+# Display project name in bash
+RUN apt-get install -y figlet
+RUN echo "figlet Drill && echo \"\nDockerized for magasin (https://github.com/unicef/magasin) \n\n\"" > /etc/bash.bashrc
+
+# Clean apt cache
 RUN apt clean
 
 # Add user and group drill
 RUN groupadd -r drill && useradd -r -d /var/lib/drill -g drill drill
 
-
 # Create the required folders assign the permissions to the folders
 RUN mkdir /opt/drill && chown drill /opt/drill 
 RUN mkdir /var/lib/drill  && chown drill /var/lib/drill && chgrp drill /var/lib/drill && chmod 700 /var/lib/drill
 RUN mkdir /var/log/drill && chown drill /var/log/drill && chgrp drill /var/log/drill && chmod 700 /var/log/drill
-
 
 # Install Drill
 ADD ${MIRROR}/dist/drill/$VERSION/apache-drill-${VERSION}.tar.gz /tmp/apache-drill-$VERSION.tar.gz
