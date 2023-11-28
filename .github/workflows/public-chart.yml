@@ -46,7 +46,7 @@ jobs:
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
         with:
-          # defaults to "charts" but our drill cahrt is in "drill"
-          charts_dir: drill
+          # defaults to "charts", and looks for folders"
+          charts_dir: .
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
