@@ -47,6 +47,6 @@ jobs:
         uses: helm/chart-releaser-action@v1.6.0
         with:
           # defaults to "charts", and looks for folders"
-          charts_dir: .
+          charts_dir: charts
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
