@@ -15,8 +15,8 @@ This is an extended version of the originally chart created in [github.com/Agiri
 After cloning this repo, Apache Drill helm chart can be deployed as simply as follows: 
 
 ```shell
-# helm install <release-name> drill/ [--namespace|-n <namespace-name> --create-namespace]
- helm install drill drill/ --namespace magasin-drill --create-namespace
+# helm install <release-name> charts/drill/ [--namespace|-n <namespace-name> --create-namespace]
+ helm install drill charts/drill/ --namespace magasin-drill --create-namespace
 ```
 
 This will install Apache Drill within the namespace `magasin-drill`. If you skip `--namespace magasin-drill --create-namespace` the chart is installed in the `default` namespace. 
@@ -63,7 +63,7 @@ The helm chart version 0.6.0 comes with Apache Drill 1.21 and Zookeper 3.9.1.
 
 ### Customizing the setup
 
-Helm Charts use `values.yaml` for providing default values to 'variables' used in the chart templates.  Refer to the [drill/values.yaml](drill/values.yaml) file for details on default values for the charts.
+Helm Charts use `values.yaml` for providing default values to 'variables' used in the chart templates.  Refer to the [charts/drill/values.yaml](charts/drillvalues.yaml) file for details on default values for the charts.
 
 You can create a `values.yaml`` file to overrides some of the default values. For example, by default the helm chart launches 2 drillbits, but you can set it to 1.
 
@@ -76,13 +76,13 @@ drill:
 Then you add the `-f filename.yaml` or `--values filename.yaml` to the install command earlier 
 
 ```
-helm install drill drill/ -f values.yaml -n magasin-drill --create-namespace
+helm install drill charts/drill/ -f values.yaml -n magasin-drill --create-namespace
 ```
 
 If the setup already exist you can use `upgrade`:
 
 ```shell
-helm upgrade drill drill/ -n magasin-drill -f values.yaml
+helm upgrade drill charts/drill/ -n magasin-drill -f values.yaml
 Release "drill" has been upgraded. Happy Helming!
 NAME: drill
 LAST DEPLOYED: Wed Nov  8 13:41:10 2023
@@ -190,7 +190,7 @@ and proceed to upgrade the setup.
 
 Alternatively, you can upgrade your setup just changing the value
 ```shell
- helm upgrade drill drill/ -n magasin-drill --set drill.exposeWebService=true
+ helm upgrade drill charts/drill/ -n magasin-drill --set drill.exposeWebService=true
 ```
 Now the drill-web-svc shall appear. 
 ```shell
@@ -210,8 +210,8 @@ Exposing the cluster externally as this **not recommended** without enabling the
 Kubernetes [Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) can be used when more that one Drill Cluster needs to be created. The `default` namespace is used by default. 
 
 ```shell
-# helm install <release-name> drill/ --namespace <namespace> --create-namespace
-helm install drill2 drill/ --namespace magasin-drill2 --create-namespace
+# helm install <release-name> charts/drill/ --namespace <namespace> --create-namespace
+helm install drill2 charts/drill/ --namespace magasin-drill2 --create-namespace
 ```
 
 Note that installing the Drill Helm Chart also installs the dependent Zookeeper chart. So with current design, for each instance of a Drill cluster includes a single-node Zookeeper.
@@ -232,23 +232,23 @@ You can use the `launch_ui.sh` script with the `-n <namespace>` as argument
 
 ### Upgrading Drill Charts
 
-Currently only scaling up/down the number of Drill pods is supported as part of Helm Chart upgrades. To resize a Drill Cluster, edit the `drill/values.yaml` file and apply the changes as below:
+Currently only scaling up/down the number of Drill pods is supported as part of Helm Chart upgrades. To resize a Drill Cluster, edit the `charts/drill/values.yaml` file and apply the changes as below:
 
 ```shell
-# helm upgrade <release-name> drill/
-helm upgrade drill1 drill/
+# helm upgrade <release-name> charts/drill/
+helm upgrade drill1 charts/drill/
 ```
 Alternatively, provide the count as a part of the `upgrade` command:
 
 ```shell
-# helm upgrade <release-name> drill/ --set drill.count=2
-helm upgrade drill1 drill/ --set drill.count=2
+# helm upgrade <release-name> charts/drill/ --set drill.count=2
+helm upgrade drill1 charts/drill/ --set drill.count=2
 ```
 
 ### Autoscaling Drill Clusters
 The size of the Drill cluster (number of Drill Pod replicas / number of drill-bits) can not only be manually scaled up or down as shown above, but can also be autoscaled to simplify cluster management. When enabled, with a higher CPU utilization, more drill-bits are added automatically and as the cluster load goes down, so do the number of drill-bits in the Drill Cluster. The drill-bits deemed excessive [gracefully shut down](https://drill.apache.org/docs/stopping-drill/#gracefully-shutting-down-the-drill-process), by going into quiescent mode to permit running queries to complete.
 
-Enable autoscaling by editing the drill.autoscale section in `drill/values.yaml` file.
+Enable autoscaling by editing the drill.autoscale section in `charts/drill/values.yaml` file.
 
 ```yaml
 # values.yaml
@@ -267,15 +267,15 @@ drill:
 If autoscaling is enabled:
 
 ```shell
-# helm upgrade <release-name> drill/ --set drill.count=<new-min-count> --set drill.autoscale.maxCount=<new-max-count>
-helm upgrade drill1 drill/ --set drill.count=3 --set drill.autoscale.maxCount=6
+# helm upgrade <release-name> charts/drill/ --set drill.count=<new-min-count> --set drill.autoscale.maxCount=<new-max-count>
+helm upgrade drill1 charts/drill/ --set drill.count=3 --set drill.autoscale.maxCount=6
 ```
 
 
 ### Package
 Drill Helm Charts can be packaged for distribution as follows:
 ```
-$ helm package drill/
+$ helm package charts/drill/
 Successfully packaged chart and saved it to: /xxx/magasin-drill/drill-1.0.0.tgz
 ```
 
@@ -529,10 +529,10 @@ minikube image pull merlos/drill:1.21.1
 These will download the images locally so they'll be available. Use `minikube image ls` to view the images available and `minikube image remove <image-name>` to remove them.
 
 ## The chart structure
-Apache Drill Helm charts are organized as a collection of files inside of the `drill/` directory. As Drill depends on [Apache Zookeeper](https://zookeeper.apache.org/) for cluster co-ordination, a zookeeper chart is inside the dependencies folder ['drill/charts'](drill/charts/). The Zookeeper chart follows a similar structure as the Drill chart.
+Apache Drill Helm charts are organized as a collection of files inside of the `charts/drill/` directory. As Drill depends on [Apache Zookeeper](https://zookeeper.apache.org/) for cluster co-ordination, a zookeeper chart is inside the dependencies folder ['charts/drill/charts'](charts/drill/charts/). The Zookeeper chart follows a similar structure as the Drill chart.
 
 ```
-drill/   
+charts/drill/   
   Chart.yaml    # A YAML file with information about the chart
   values.yaml   # The default configuration values for this chart
   charts/       # A directory containing the Zookeeper (zk) charts
@@ -544,7 +544,7 @@ Helm Charts contain `templates` which are used to generate Kubernetes manifest f
 
 Drill Helm Charts contain the following templates:
 ```
-drill/
+charts/drill/
   ...
   templates/
     drill-rbac-*.yaml       # To enable RBAC for the Drill app
