@@ -1,5 +1,8 @@
 # Helm Charts for Apache Drill
 
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/magasin-drill)](https://artifacthub.io/packages/search?repo=magasin-drill)
+
+
 This repository contains a collection of files that can be used to deploy [Apache Drill](http://drill.apache.org/) on [Kubernetes](https://kubernetes.io/) using [Helm Charts](https://helm.sh/). Supports single-node and [cluster](http://drill.apache.org/docs/installing-drill-in-distributed-mode/) modes.
 
 This is an extended version of the originally chart created in [github.com/Agirish/drill-helm-charts](https://github.com/Agirish/drill-helm-charts). This extension has been created to fit the needs of [UNICEF's magasin](https://github.com/unicef/magasin).
