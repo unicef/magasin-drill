@@ -11,11 +11,12 @@ usage() {
   echo "Usage: $0 -r REGISTRY -v VERSION [-t TAG] [-p]"
   echo "  -r REGISTRY: The registry where the package will be published."
   echo "               Example: your username in dockerhub"
-  echo "  -v VERSION: The version number of the zookeeper to be created."
-  echo "              Example: 3.9.1"
-  echo "              Available versions on https://downloads.apache.org/zookeeper"
-  echo "  -t TAG: Optional tag for the image. If not provided, defaults to the VERSION."
-  echo "  -p: Optional flag to push the built image to the registry."
+  echo "  -v VERSION:  The version number of the zookeeper to be created."
+  echo "               Example: 3.9.1"
+  echo "               Available versions on https://downloads.apache.org/zookeeper"
+  echo "  -t TAG:      Optional tag for the image. If not provided, defaults to the VERSION."
+  echo "  -p:          Optional flag to build multi-architecture (amd64,arm64) and push the" 
+  echo "               image to the registry"
   echo 
   echo "  Example:"
   echo "         $0 -r merlos -v 3.9.1"
@@ -88,17 +89,19 @@ else
     echo "magasin-builder buildx instance already exists."
 fi
 
-docker buildx build --builder=magasin-builder --platform linux/amd64 --build-arg VERSION=${VERSION} -t ${PROJECT}:${TAG} --load  . 
+
 
 
 # If there was no error building the image
-if [[ $? -eq 0 ]]; then
-  if [[ $PUSH == true ]]; then
+
+if [[ $PUSH == true ]]; then    
     echo "Pushing to registry ${REGISTRY}..."
-    docker tag ${PROJECT}:${TAG} ${REGISTRY}/${PROJECT}:${TAG}
-    docker push ${REGISTRY}/${PROJECT}:${TAG}
+    docker buildx build --builder=magasin-builder --platform linux/amd64,linux/arm64 --build-arg VERSION=${VERSION} -t ${REGISTRY}/${PROJECT}:${TAG} --push  . 
     echo "Done"
   else
-    echo "Build successful. Image not pushed to registry as -p flag not provided."
+    docker buildx build --builder=magasin-builder --build-arg VERSION=${VERSION} -t ${REGISTRY}/${PROJECT}:${TAG} --load  . 
+    if [[ $? -eq 0 ]]; then
+      echo "Build successful. Image not pushed to registry as -p flag not provided."
+    fi
   fi
 fi
