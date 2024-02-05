@@ -14,13 +14,15 @@ This is an extended version of the originally chart created in [github.com/Agiri
 
 ## Install
 
+1.- Add the helm repo
+    ```sh
+    helm repo add magasin-drill https://unicef.github.io/magasin-drill/
+    ```
 
-After cloning this repo, Apache Drill helm chart can be deployed as simply as follows: 
-
-```shell
-# helm install <release-name> charts/drill/ [--namespace|-n <namespace-name> --create-namespace]
- helm install drill charts/drill/ --namespace magasin-drill --create-namespace
-```
+2. Intall the chart
+    ```sh
+    helm install drill magasin-drill/drill --namespace magasin-drill --create-namespace
+    ```
 
 This will install Apache Drill within the namespace `magasin-drill`. If you skip `--namespace magasin-drill --create-namespace` the chart is installed in the `default` namespace. 
 
@@ -35,7 +37,7 @@ drillbit-1   1/1     Running   0          5m3s
 zk-0         1/1     Running   0          5m3s 
 ```
 
-Once all the pods  have the READT value as `1/1` and the `STATUS` is `Running`, you can launch the Drill Web UI using the `launch_ui.sh` script:
+Once all the pods  have the READY value as `1/1` and the `STATUS` is `Running`, you can launch the Drill Web UI using the `launch_ui.sh` script:
 
 ```shell
 # ./scripts/launch_ui [-n <namespace>]
@@ -52,7 +54,7 @@ Then open `http://localhost:8047` in a browser.
 
 ## Chart version
 
-The chart appVersion displays the drill and zookeper versions, respectively.
+The chart appVersion displays the drill and zookeeper versions, respectively.
 For example:
 
 ```shell
@@ -78,14 +80,14 @@ drill:
 
 Then you add the `-f filename.yaml` or `--values filename.yaml` to the install command earlier 
 
-```
-helm install drill charts/drill/ -f values.yaml -n magasin-drill --create-namespace
+```sh
+helm install drill magasin-drill/drill -f values.yaml -n magasin-drill --create-namespace
 ```
 
 If the setup already exist you can use `upgrade`:
 
-```shell
-helm upgrade drill charts/drill/ -n magasin-drill -f values.yaml
+```sh
+helm upgrade drill magasin-drill/drill -n magasin-drill -f values.yaml
 Release "drill" has been upgraded. Happy Helming!
 NAME: drill
 LAST DEPLOYED: Wed Nov  8 13:41:10 2023
@@ -131,7 +133,7 @@ drill:
 or manually
 
 ```shell
-kubectl create secret generic drill-storage-plugin-secret --from-file=storage-plugins-override.conf --namespace <namespace>
+kubectl create secret generic drill-storage-plugin-secret --from-file=storage-plugins-override.conf --namespace magasin-drill
 ```
 
 
@@ -169,6 +171,7 @@ drill:
  
 
 ```
+
 #### Allow access to Drill web UI from outside of the cluster.
 
 By default, you can only access the Drill Web UI by performing a port forward to your localhost `using scripts/launch_ui.sh` or using `kubectl`:
@@ -193,7 +196,7 @@ and proceed to upgrade the setup.
 
 Alternatively, you can upgrade your setup just changing the value
 ```shell
- helm upgrade drill charts/drill/ -n magasin-drill --set drill.exposeWebService=true
+ helm upgrade drill magasin-drill/drill -n magasin-drill --set drill.exposeWebService=true
 ```
 Now the drill-web-svc shall appear. 
 ```shell
@@ -206,15 +209,17 @@ zk-service      ClusterIP      10.96.54.14     <none>          2181/TCP,2888/TCP
 
 You can open http://[external-ip]:8047 to access the cluster.
 
-Exposing the cluster externally as this **not recommended** without enabling the authentication. Anyone will be able to access your drill!!! You can read on [drill documentation about how to enable authentication](https://drill.apache.org/docs/securing-drill-introduction/)
+Exposing the cluster externally is **not recommended without enabling the authentication**. Anyone will be able to access your drill!!! 
+
+You can read more on [drill documentation about how to enable authentication](https://drill.apache.org/docs/securing-drill-introduction/)
 
 
 ### Deploy multiple drill clusters
 Kubernetes [Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/) can be used when more that one Drill Cluster needs to be created. The `default` namespace is used by default. 
 
 ```shell
-# helm install <release-name> charts/drill/ --namespace <namespace> --create-namespace
-helm install drill2 charts/drill/ --namespace magasin-drill2 --create-namespace
+# helm install <release-name> repo/chart --namespace <namespace> --create-namespace
+helm install drill2 magasin-drill/drill --namespace magasin-drill2 --create-namespace
 ```
 
 Note that installing the Drill Helm Chart also installs the dependent Zookeeper chart. So with current design, for each instance of a Drill cluster includes a single-node Zookeeper.
@@ -235,17 +240,22 @@ You can use the `launch_ui.sh` script with the `-n <namespace>` as argument
 
 ### Upgrading Drill Charts
 
-Currently only scaling up/down the number of Drill pods is supported as part of Helm Chart upgrades. To resize a Drill Cluster, edit the `charts/drill/values.yaml` file and apply the changes as below:
+Currently only scaling up/down the number of Drill pods is supported as part of Helm Chart upgrades. To resize a Drill Cluster, edit the `values.yaml` file and apply the changes as below:
+
 
 ```shell
-# helm upgrade <release-name> charts/drill/
-helm upgrade drill1 charts/drill/
+# 
+helm upgrade drill1 magasin-drill/drill -f values.yaml
+
+# If cloned this repo
+# helm upgrade <release-name> repo/chart/
+helm upgrade drill1 magasin-drill/drill
 ```
 Alternatively, provide the count as a part of the `upgrade` command:
 
 ```shell
-# helm upgrade <release-name> charts/drill/ --set drill.count=2
-helm upgrade drill1 charts/drill/ --set drill.count=2
+# helm upgrade <release-name> repo/chart --set drill.count=2
+helm upgrade drill1 magasin-drill/drill --set drill.count=2
 ```
 
 ### Autoscaling Drill Clusters
@@ -270,15 +280,16 @@ drill:
 If autoscaling is enabled:
 
 ```shell
-# helm upgrade <release-name> charts/drill/ --set drill.count=<new-min-count> --set drill.autoscale.maxCount=<new-max-count>
-helm upgrade drill1 charts/drill/ --set drill.count=3 --set drill.autoscale.maxCount=6
+# helm upgrade <release-name> repo/chart --set drill.count=<new-min-count> --set drill.autoscale.maxCount=<new-max-count>
+helm upgrade drill1 magasin-drill/drill --set drill.count=3 --set drill.autoscale.maxCount=6
 ```
 
 
 ### Package
 Drill Helm Charts can be packaged for distribution as follows:
-```
-$ helm package charts/drill/
+
+```sh
+helm package charts/drill/
 Successfully packaged chart and saved it to: /xxx/magasin-drill/drill-1.0.0.tgz
 ```
 
@@ -306,7 +317,7 @@ To update the drill image edit the `drill.image` value:
 drill:
   #...
   # Change the line below with your custom image
-  image: merlos/drill:1.21.1 
+  image: merlos/drill:1.21.1-multi-arch 
 ```
 
 And, in the zookeeper section:
@@ -315,7 +326,7 @@ zookeper:
   #...
   #...
   # Change the line below with your custom image
-  image: merlos/zookeeper:3.9.1
+  image: merlos/zookeeper:3.9.1-multi-arch
 ```
 
 
@@ -412,16 +423,16 @@ drillbit is running.
 
 The `-f` argument will display new logs continuously. In this case, these logs do not give us any additional clue. So, next step is to look inside of the pod itself:
 
-```
+```sh
 # kubectl exec <pod> -n <namespace> -ti -- <command> 
 kubectl exec drillbit-0 -n magasin-drill -ti -- /bin/bash
 ```
+
 This command will launch a shell within the pod. `-ti` is to allow interactive mode.
 
 Within the shell we can explore the `/opt/drill/conf` and `/var/log/drill/` folders.
 
-```shell
-
+```sh
 [root@drillbit-0 /]# pwd
 /
 [root@drillbit-0 /]# cd /opt/drill/conf/
@@ -481,13 +492,14 @@ Exception in thread "main" com.typesafe.config.ConfigException$Parse: drill-over
 ```
 
 There is one line:
+
 ```
 Exception in thread "main" com.typesafe.config.ConfigException$Parse: drill-override.conf @ file:/opt/drill/conf/drill-override.conf: 5: unbalanced close brace '}' with no open brace (if you intended '}' to be part of a key or string value, try enclosing the key or value in double quotes)
 ```
 
 In this case the line tells us that there is a `}` in excess. Let's check it in the file:
 
-```shell
+```sh
 [root@drillbit-0 /]# cat /opt/drill/conf/drill-override.conf 
 
 exec.errors: { 
