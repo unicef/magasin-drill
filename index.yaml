@@ -3,6 +3,28 @@ entries:
   drill:
   - apiVersion: v2
     appVersion: 1.21.1-3.9.1
+    created: "2024-02-05T19:54:23.751794823Z"
+    description: Helm charts for deploying Apache Drill on a Kubernetes cluster
+    digest: 06243d232bc63fe966e9de07e122e6dc04d38eb345d6eacdb7854a0e08352d17
+    home: http://drill.apache.org/
+    keywords:
+    - apache
+    - drill
+    - zookeeper
+    - magasin
+    - unicef
+    maintainers:
+    - email: merlos@users.noreply.github.com
+      name: merlos
+    name: drill
+    sources:
+    - https://github.com/unicef/magasin-drill
+    type: application
+    urls:
+    - https://github.com/unicef/magasin-drill/releases/download/drill-0.7.1/drill-0.7.1.tgz
+    version: 0.7.1
+  - apiVersion: v2
+    appVersion: 1.21.1-3.9.1
     created: "2024-02-05T19:17:43.375718586Z"
     description: Helm charts for deploying Apache Drill on a Kubernetes cluster
     digest: bbf369da4b381688383cc0ddc96472d37852b3e466c7963eecfb5a51b341bb09
@@ -45,4 +67,4 @@ entries:
     urls:
     - https://github.com/unicef/magasin-drill/releases/download/drill-0.6.1/drill-0.6.1.tgz
     version: 0.6.1
-generated: "2024-02-05T19:17:43.375732161Z"
+generated: "2024-02-05T19:54:23.751811334Z"
