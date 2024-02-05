@@ -1,6 +1,6 @@
 apiVersion: v2
 name: zookeeper
-version: 0.5.1
+version: 0.7.0
 appVersion: 3.9.1
 description: Helm chart for deploying Apache Zookeeper on a Kubernetes cluster
 type: application
@@ -13,6 +13,6 @@ home: 'http://zookeeper.apache.org/'
 sources:
   - 'https://github.com/unicef/magasin-drill'
 maintainers:
-  - name: Merlos
+  - name: merlos
     email: merlos@users.noreply.github.com
 
