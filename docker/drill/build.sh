@@ -15,7 +15,7 @@ usage() {
   echo "              Example: 1.21.1"
   echo "              Available versions on https://archive.apache.org/dist/drill/"
   echo "  -t TAG: Optional tag for the image. If not provided, defaults to the VERSION."
-  echo "  -p: Optional flag to push the built image to the registry."
+  echo "  -p: Optional flag to push the built image to the registry and enable multi-arch."
   echo 
   echo "  Example:"
   echo "         $0 -r merlos -v 1.21.1"
@@ -76,7 +76,7 @@ if ! docker buildx inspect magasin-builder >/dev/null 2>&1; then
     echo "Creating magasin-builder buildx instance..."
     
     # Create magasin-builder buildx instance with docker-container driver
-    docker buildx create --driver=docker-container --name=magasin-builder
+    docker buildx create --driver=docker-container --name=magasin-builder 
     
     if [ $? -eq 0 ]; then
         echo "magasin-builder buildx instance created successfully."
@@ -88,17 +88,18 @@ else
     echo "magasin-builder buildx instance already exists."
 fi
 
-docker buildx build --builder=magasin-builder --platform linux/amd64 --build-arg VERSION=${VERSION} -t ${PROJECT}:${TAG} --load  . 
 
 
 # If there was no error building the image
-if [[ $? -eq 0 ]]; then
-  if [[ $PUSH == true ]]; then
-    echo "Pushing to registry ${REGISTRY}..."
-    docker tag ${PROJECT}:${TAG} ${REGISTRY}/${PROJECT}:${TAG}
-    docker push ${REGISTRY}/${PROJECT}:${TAG}
-    echo "Done"
-  else
+
+if [[ $PUSH == true ]]; then
+  echo "Pushing to registry ${REGISTRY}..."
+  docker buildx build --builder=magasin-builder --platform linux/amd64,linux/arm64 --build-arg VERSION=${VERSION} -t ${REGISTRY}/${PROJECT}:${TAG} --push  . 
+  echo "Done"
+else
+  docker buildx build --builder=magasin-builder --build-arg VERSION=${VERSION} -t ${REGISTRY}/${PROJECT}:${TAG} --load  .
+  if [[ $? -eq 0 ]]; then
     echo "Build successful. Image not pushed to registry as -p flag not provided."
   fi
 fi
+
