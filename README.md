@@ -15,11 +15,13 @@ This is an extended version of the originally chart created in [github.com/Agiri
 ## Install
 
 1.- Add the helm repo
+
     ```sh
     helm repo add magasin-drill https://unicef.github.io/magasin-drill/
     ```
 
 2. Intall the chart
+3. 
     ```sh
     helm install drill magasin-drill/drill --namespace magasin-drill --create-namespace
     ```
