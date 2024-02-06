@@ -14,8 +14,7 @@ This is an extended version of the originally chart created in [github.com/Agiri
 
 ## Install
 
-1.- Add the helm repo
-
+1. Add the helm repo
     ```sh
     helm repo add magasin-drill https://unicef.github.io/magasin-drill/
     ```
