@@ -98,10 +98,9 @@ if [[ $PUSH == true ]]; then
     echo "Pushing to registry ${REGISTRY}..."
     docker buildx build --builder=magasin-builder --platform linux/amd64,linux/arm64 --build-arg VERSION=${VERSION} -t ${REGISTRY}/${PROJECT}:${TAG} --push  . 
     echo "Done"
-  else
+else
     docker buildx build --builder=magasin-builder --build-arg VERSION=${VERSION} -t ${REGISTRY}/${PROJECT}:${TAG} --load  . 
     if [[ $? -eq 0 ]]; then
-      echo "Build successful. Image not pushed to registry as -p flag not provided."
+        echo "Build successful. Image not pushed to registry as -p flag not provided."
     fi
-  fi
 fi
