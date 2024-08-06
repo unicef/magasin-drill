@@ -7,10 +7,21 @@ This repository contains a collection of files that can be used to deploy [Apach
 
 This is an extended version of the originally chart created in [github.com/Agirish/drill-helm-charts](https://github.com/Agirish/drill-helm-charts). This extension has been created to fit the needs of [UNICEF's magasin](https://github.com/unicef/magasin).
 
+**Versions**
+
+| Chart Version | Drill Version | Zookeeper Version | Release Date      |
+|---------------|---------------|-------------------|--------------------|
+| 0.7.2         | 1.21.2        | 3.9.2             | 2024-08-07
+| 0.7.1         | 1.21.1        | 3.9.1             | 2024-02-05
+---
+
+
+
 ## Pre-requisites
 - A Kubernetes Cluster.
 - [Helm](https://github.com/helm/helm#install) version 3.0 or greater.
 - [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) version 1.16.0 or greater.
+
 
 ## Install
 
