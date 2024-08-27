@@ -14,16 +14,10 @@ spec:
       labels:
         app: zk-quorum
     spec:
+      {{- with .Values.affinity }}
       affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: app
-                    operator: In
-                    values:
-                      - zk-quorum
-              topologyKey: "kubernetes.io/hostname"
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       serviceAccountName: zk-sa
       containers:
         - name: zk-pod

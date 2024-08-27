@@ -119,7 +119,17 @@ drill:
       mountPath: /opt/drill/conf/storage-plugins-override.conf
       subPath: storage-plugins-override.conf
 
-
+  # set the affinity of your drill pods
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - drill-app
+        topologyKey: kubernetes.io/hostname
 
 
 # ZooKeeper sub-section
@@ -132,3 +142,15 @@ zookeeper:
   cpu: 500m
   # ZooKeeper image with tag
   image: merlos/zookeeper:3.9.2
+  
+  # set the affinity of your ZooKeeper pods
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - zk-quorum
+        topologyKey: kubernetes.io/hostname
