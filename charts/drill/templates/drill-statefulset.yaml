@@ -94,6 +94,9 @@ spec:
               subPath: drill-env.sh
         {{ end }}
       terminationGracePeriodSeconds: {{ .Values.drill.terminationGracePeriodSeconds }}
+      {{- if .Values.drill.priorityClassName }}
+      priorityClassName: {{ .Values.drill.priorityClassName }}
+      {{- end }}
       
     {{- if .Values.drill.volumes.add }}
       volumes:
