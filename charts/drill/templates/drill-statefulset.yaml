@@ -12,6 +12,10 @@ spec:
       app: drill-app
   template:
     metadata:
+      {{- with .Values.drill.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
         app: drill-app
     spec:
