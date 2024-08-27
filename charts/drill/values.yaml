@@ -119,7 +119,10 @@ drill:
       mountPath: /opt/drill/conf/storage-plugins-override.conf
       subPath: storage-plugins-override.conf
 
-
+  # set annotations to drill pod
+  podAnnotations: {}
+    # responsible: devops
+    # stage: prod
 
 
 # ZooKeeper sub-section
@@ -132,3 +135,7 @@ zookeeper:
   cpu: 500m
   # ZooKeeper image with tag
   image: merlos/zookeeper:3.9.2
+  # set annotations to ZooKeeper pods
+  podAnnotations: {}
+    # responsible: devops
+    # stage: prod
