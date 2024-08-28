@@ -20,15 +20,19 @@ spec:
         app: drill-app
     spec:
       affinity:
+      {{- if .Values.drill.affinity }}
+        {{- toYaml .Values.drill.affinity | nindent 8 }}
+      {{- else }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: app
-                    operator: In
-                    values:
-                      - drill-app
-              topologyKey: "kubernetes.io/hostname"
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - drill-app
+            topologyKey: kubernetes.io/hostname
+      {{- end }}
       serviceAccountName: drill-sa
       containers:
         - name: drill-pod
