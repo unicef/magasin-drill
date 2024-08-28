@@ -75,6 +75,9 @@ drill:
   # Number of seconds after which pods are forcefully killed
   # Note: Lower values may cause running queries to fail
   terminationGracePeriodSeconds: 60
+  # set the k8s priority of drill pods, see 
+  # https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
+  # priorityClassName: <your-priorityclass>
 
   # The size of the Drill cluster (number of Drill Pod replicas) can be autoscaled
   # With higher CPU utilization, more drill-bits are added automatically. And as the load goes down,
@@ -139,3 +142,6 @@ zookeeper:
   podAnnotations: {}
     # responsible: devops
     # stage: prod
+  # set the k8s priority of ZooKeeper pods
+  # see https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
+  # priorityClassName: <your-priorityclass>
