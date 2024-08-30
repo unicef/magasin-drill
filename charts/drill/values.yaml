@@ -127,6 +127,9 @@ drill:
     # responsible: devops
     # stage: prod
 
+  # set the affinity of your drill pods
+  # see https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+  #affinity: {}
 
 # ZooKeeper sub-section
 zookeeper:
@@ -145,3 +148,7 @@ zookeeper:
   # set the k8s priority of ZooKeeper pods
   # see https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
   # priorityClassName: <your-priorityclass>
+
+  # set the affinity of your drill pods
+  # see https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+  #affinity: {}
