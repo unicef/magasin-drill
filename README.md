@@ -598,6 +598,16 @@ charts/drill/
         zk-statefulset.yaml # To create a ZK cluster. Currently only a single-node ZK (1 replica) is supported
 ```
 
+## Contributing
+
+We welcome contributions. To contribute, please fork this repository, make your changes, and submit a pull request.
+
+If new values are added to the `values.yaml` file include the documentation on how to use them.
+
+If you find a bug or have a feature request, please open an issue.
+
+
+
 ## License 
 
 Apache License 2.0 UNICEF.org
