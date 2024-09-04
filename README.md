@@ -72,7 +72,7 @@ kubectl port-forward --namespace magasin-drill service/drill-service 8047:8047
 ```
 Then open the browser in `http://localhost:8047` to access the Drill Web UI.
 
-Or you can download the [launch_ui.sh script from this repo](https://github.com/unicef/magasin-drill/blob/main/scripts/launch_ui.sh) and run it::
+Or you can download the [launch_ui.sh script from this repo](https://github.com/unicef/magasin-drill/blob/main/scripts/launch_ui.sh) and run it:
 
 
 ```shell
