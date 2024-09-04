@@ -25,6 +25,7 @@ This is an extended version of the originally chart created in [github.com/Agiri
 
 ## Install
 
+### Option 1: Using the Helm repository (recommended)
 1. Add the helm repo
     ```sh
     helm repo add magasin-drill https://unicef.github.io/magasin-drill/
@@ -34,9 +35,25 @@ This is an extended version of the originally chart created in [github.com/Agiri
     ```sh
     helm install drill magasin-drill/drill --namespace magasin-drill --create-namespace
     ```
+This will install Apache Drill in the `magasin-drill` namespace. If you skip `--namespace magasin-drill --create-namespace` the chart is installed in the `default` namespace. 
 
-This will install Apache Drill within the namespace `magasin-drill`. If you skip `--namespace magasin-drill --create-namespace` the chart is installed in the `default` namespace. 
+### Option 2: Cloning the repo
 
+1. Clone the repo
+    ```sh
+    git clone https://github.com/unicef/magasin-drill
+    ```
+
+2. Install the chart
+    ```sh
+    cd magasin-drill
+    helm install drill ./charts/drill --namespace magasin-drill --create-namespace
+    ```
+
+This will install Apache Drill in the `magasin-drill` namespace. If you skip `--namespace magasin-drill --create-namespace` the chart is installed in the `default` namespace. 
+
+
+## Usage
 You can list the pods by running:
 
 ```shell
