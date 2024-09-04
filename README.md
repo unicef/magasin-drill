@@ -5,14 +5,17 @@
 
 This repository contains a collection of files that can be used to deploy [Apache Drill](http://drill.apache.org/) on [Kubernetes](https://kubernetes.io/) using [Helm Charts](https://helm.sh/). Supports single-node and [cluster](http://drill.apache.org/docs/installing-drill-in-distributed-mode/) modes.
 
-This is an extended version of the originally chart created in [github.com/Agirish/drill-helm-charts](https://github.com/Agirish/drill-helm-charts). This extension has been created to fit the needs of [UNICEF's magasin](https://github.com/unicef/magasin).
+This is an extended version of the originally chart created in [github.com/Agirish/drill-helm-charts](https://github.com/Agirish/drill-helm-charts). 
 
-**Versions**
+This extension has been created to fit the needs of [UNICEF's magasin](https://github.com/unicef/magasin), an end-to-end data AI/ML cloud data platform based.
 
-| Chart Version | Drill Version | Zookeeper Version | Release Date      |
-|---------------|---------------|-------------------|--------------------|
-| 0.7.2         | 1.21.2        | 3.9.2             | 2024-08-07
-| 0.7.1         | 1.21.1        | 3.9.1             | 2024-02-05
+**Chart Versions**
+
+| Chart Version | Drill Version | Zookeeper Version | Release Date       | Release notes          |
+|---------------|---------------|-------------------|--------------------|------------------------|
+| 0.8.0         | 1.21.2        | 3.9.2             | 2024-09-04         | [Release notes v0.8.0](https://github.com/unicef/magasin-drill/releases/tag/releases%2Fv0.8.0) | 
+| 0.7.2         | 1.21.2        | 3.9.2             | 2024-08-07         | [Release notes v0.7.2](https://github.com/unicef/magasin-drill/releases/tag/releases%2Fv0.7.2) |
+| 0.7.1         | 1.21.1        | 3.9.1             | 2024-02-05         | [Release notes v0.7.1](https://github.com/unicef/magasin-drill/releases/tag/releases%2Fv0.7.1) |
 ---
 
 
