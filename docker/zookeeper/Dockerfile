@@ -36,6 +36,9 @@ COPY zoo.cfg /opt/zookeeper/conf/zoo.cfg
 # Set logs in /var/logs
 ENV ZOO_LOG_DIR=/var/log/zookeeper 
 
+## Expose client, server and leader-election ports on container
+EXPOSE 2181 2888 3888
+
 # Start ZooKeeper
 COPY start.sh /opt/zookeeper/start.sh
 
