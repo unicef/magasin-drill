@@ -34,6 +34,10 @@ RUN rm -f /tmp/apache-drill-$VERSION.tar.gz
 RUN chgrp -v -R drill /opt/drill
 RUN chown -R drill /opt/drill/conf 
 
+# Expose ports: Drill web UI, user port, control port and Data port
+# https://drill.apache.org/docs/ports-and-bind-addresses-used-by-drill/
+EXPOSE 8047 31010 31011 31012
+
 # Test Drill
 #RUN echo "select * from sys.version;" > /tmp/version.sql
 #RUN /opt/drill/bin/sqlline -u jdbc:drill:zk=local --verbose --run=/tmp/version.sql
