@@ -26,8 +26,8 @@ RUN mkdir /var/lib/drill  && chown drill /var/lib/drill && chgrp drill /var/lib/
 RUN mkdir /var/log/drill && chown drill /var/log/drill && chgrp drill /var/log/drill && chmod 700 /var/log/drill
 
 # Install Drill
-ADD ${MIRROR}/dist/drill/$VERSION/apache-drill-${VERSION}.tar.gz /tmp/apache-drill-$VERSION.tar.gz
-RUN tar -xzf /tmp/apache-drill-$VERSION.tar.gz -C/opt/drill --strip=1
+RUN wget ${MIRROR}/dist/drill/$VERSION/apache-drill-${VERSION}.tar.gz /tmp/apache-drill-$VERSION.tar.gz
+RUN tar -xzvf /tmp/apache-drill-$VERSION.tar.gz -C/opt/drill --strip=1
 RUN rm -f /tmp/apache-drill-$VERSION.tar.gz
 
 # Change conf folder owner as some files are required to be created tmporarily.
