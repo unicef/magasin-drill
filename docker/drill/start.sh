@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+echo "Setting up memory..."
+
+echo "Docker Image build information"
+echo "---------------------------------"
+echo DRILL_VERSION= $DRILL_VERSION
+echo AZURE_STORAGE_VERSION= $AZURE_STORAGE_VERSION
+echo HADOOP_AZURE_VERSION= $HADOOP_AZURE_VERSION
+echo "---------------------------------"
+
 # Be verbose 
 set -x
 DRILL_HOME="/opt/drill"
