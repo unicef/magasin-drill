@@ -27,20 +27,24 @@ RUN cd /tmp && echo "$(cat apache-${PROJECT}-${VERSION}.tar.gz.sha512) apache-${
 RUN gpgv --keyring /tmp/${PROJECT}-keyring.gpg /tmp/apache-${PROJECT}-${VERSION}.tar.gz.asc /tmp/apache-${PROJECT}-${VERSION}.tar.gz
 
 # Extract Drill
-RUN mkdir -p /tmp/${PROJECT}
-RUN tar -xzvf /tmp/apache-${PROJECT}-$VERSION.tar.gz -C /tmp/${PROJECT} --strip=1
+RUN mkdir -p /tmp/apache-${PROJECT}
+RUN tar -xzvf /tmp/apache-${PROJECT}-$VERSION.tar.gz -C/tmp/apache-${PROJECT}/ --strip=1
 
 # remove the tar file
 RUN rm -f /tmp/apache-${PROJECT}-$VERSION.tar.gz
 
+# Test Drill
+RUN ls -la /tmp/apache-drill
 
 
+
+#
 # Stage 2: Setup & dependency download
+#
 FROM debian:stable-slim
 
 ARG VERSION
 RUN echo $VERSION
-
 
 LABEL maintainer="merlos"
 LABEL description="Apache Drill Docker Image (by https://magasin.unicef.io)"
@@ -49,7 +53,6 @@ LABEL description="Apache Drill Docker Image (by https://magasin.unicef.io)"
 ENV DRILL_VERSION=$VERSION
 ENV AZURE_STORAGE_VERSION=8.6.6
 ENV HADOOP_AZURE_VERSION=3.4.1
-
 
 # Install Pre-Requisite Packages
 RUN apt-get update && \ 
@@ -78,19 +81,22 @@ RUN mkdir /var/lib/drill  && chown drill /var/lib/drill && chgrp drill /var/lib/
 RUN mkdir /var/log/drill && chown drill /var/log/drill && chgrp drill /var/log/drill && chmod 700 /var/log/drill
 
 # Copy the verified Drill files from the verifier stage
-COPY --from=verifier /tmp/drill /opt/drill
+COPY --from=verifier /tmp/apache-drill /opt/drill
 
-# Change conf folder owner as some files are required to be created tmporarily.
+# Change conf folder owner as some files are required to be created temporarily.
 RUN chgrp -v -R drill /opt/drill
 RUN chown -R drill /opt/drill/conf 
 
-# Expose ports: Drill web UI, user port, control port and Data port
-# https://drill.apache.org/docs/ports-and-bind-addresses-used-by-drill/
-EXPOSE 8047 31010 31011 31012
+# Set user to test the service
+USER drill
 
-# Test Drill
+# Test Drill before changing the default conf 
 RUN echo "select * from sys.version;" > /tmp/version.sql
 RUN /opt/drill/bin/sqlline -u jdbc:drill:zk=local --verbose --run=/tmp/version.sql
+RUN rm -f /tmp/version.sql
+
+# Set root 
+USER root
 
 # Copy Scripts
 COPY distrib-env.sh drill-distrib.conf /opt/drill/conf/
@@ -112,7 +118,15 @@ RUN wget https://repo1.maven.org/maven2/com/microsoft/azure/azure-storage/${AZUR
 RUN cd /opt/drill/jars/3rdparty && echo $(cat azure-storage-${AZURE_STORAGE_VERSION}.jar.sha1) azure-storage-${AZURE_STORAGE_VERSION}.jar | sha1sum -c -
 
 
-# Set user to run the service
+# Expose ports: Drill web UI, user port, control port and Data port
+# https://drill.apache.org/docs/ports-and-bind-addresses-used-by-drill/
+EXPOSE 8047 31010 31011 31012
+
+
+RUN chown -R drill /tmp/drill 
+RUN chgrp -R drill /tmp/drill 
+
+# Set the user to run the container
 USER drill
 
 # Start Drill
