@@ -57,7 +57,7 @@ RUN apt-get update && \
       jed \
       procps \
       wget \
-      figlet &&
+      figlet && \
     rm -rf /var/lib/apt/lists/* 
 
 RUN echo "figlet Drill && echo \"\nDockerized for magasin (https://github.com/unicef/magasin) \n\n\"" > /etc/bash.bashrc
