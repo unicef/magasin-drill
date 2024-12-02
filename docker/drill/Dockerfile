@@ -2,13 +2,28 @@ FROM debian:stable-slim
 
 ARG VERSION
 RUN echo $VERSION
-ARG MIRROR=https://archive.apache.org
-RUN echo $MIRROR
+
+
+LABEL maintainer="merlos"
+LABEL description="Apache Drill Docker Image (by https://magasin.unicef.io)"
+
+# Set environment variables
+ENV DRILL_VERSION=$VERSION
+ENV AZURE_STORAGE_VERSION=8.6.6
+ENV HADOOP_AZURE_VERSION=3.4.1
+
 
 # Install Pre-Requisite Packages
-RUN apt-get update
-RUN apt-get upgrade -y
-RUN apt-get install -y openjdk-17-jre jed procps stress
+RUN apt-get update && \ 
+    apt-get upgrade -y && \
+    apt-get install -y  \
+      openjdk-17-jre \
+      jed \
+      procps \
+      stress \
+      wget \
+      figlet && \
+    rm -rf /var/lib/apt/lists/* 
 
 # Display project name in bash
 RUN apt-get install -y figlet
