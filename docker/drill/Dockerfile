@@ -1,3 +1,41 @@
+# Stage 1: DRILL download and verification
+FROM debian:stable-slim AS verifier
+
+ARG VERSION
+ARG MIRROR=https://archive.apache.org
+
+ENV PROJECT=drill
+
+# Install necessary tools
+RUN apt-get update && \
+    apt-get install -y wget gpg gpgv && \
+    rm -rf /var/lib/apt/lists/*
+
+# Download Drill, sha512 checksum, GPG signature and PGP keys
+RUN wget ${MIRROR}/dist/${PROJECT}/$VERSION/apache-${PROJECT}-${VERSION}.tar.gz -P /tmp/
+RUN wget ${MIRROR}/dist/${PROJECT}/$VERSION/apache-${PROJECT}-${VERSION}.tar.gz.sha512 -P /tmp/
+RUN wget ${MIRROR}/dist/${PROJECT}/$VERSION/apache-${PROJECT}-${VERSION}.tar.gz.asc -P /tmp/
+RUN wget ${MIRROR}/dist/${PROJECT}/KEYS -P /tmp/
+
+# Create the drill pgp keyring
+RUN gpg --no-default-keyring --keyring /tmp/${PROJECT}-keyring.gpg --import /tmp/KEYS
+
+# Verify SHA512 checksum
+RUN cd /tmp && echo "$(cat apache-${PROJECT}-${VERSION}.tar.gz.sha512) apache-${PROJECT}-${VERSION}.tar.gz" | sha512sum -c -
+
+# Verify GPG signature
+RUN gpgv --keyring /tmp/${PROJECT}-keyring.gpg /tmp/apache-${PROJECT}-${VERSION}.tar.gz.asc /tmp/apache-${PROJECT}-${VERSION}.tar.gz
+
+# Extract Drill
+RUN mkdir -p /tmp/${PROJECT}
+RUN tar -xzvf /tmp/apache-${PROJECT}-$VERSION.tar.gz -C /tmp/${PROJECT} --strip=1
+
+# remove the tar file
+RUN rm -f /tmp/apache-${PROJECT}-$VERSION.tar.gz
+
+
+
+# Stage 2: Setup & dependency download
 FROM debian:stable-slim
 
 ARG VERSION
@@ -26,7 +64,6 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* 
 
 # Display project name in bash
-RUN apt-get install -y figlet
 RUN echo "figlet Drill && echo \"\nDockerized for magasin (https://github.com/unicef/magasin) \n\n\"" > /etc/bash.bashrc
 
 # Clean apt cache
@@ -40,10 +77,8 @@ RUN mkdir /opt/drill && chown drill /opt/drill
 RUN mkdir /var/lib/drill  && chown drill /var/lib/drill && chgrp drill /var/lib/drill && chmod 700 /var/lib/drill
 RUN mkdir /var/log/drill && chown drill /var/log/drill && chgrp drill /var/log/drill && chmod 700 /var/log/drill
 
-# Install Drill
-RUN wget ${MIRROR}/dist/drill/$VERSION/apache-drill-${VERSION}.tar.gz /tmp/apache-drill-$VERSION.tar.gz
-RUN tar -xzvf /tmp/apache-drill-$VERSION.tar.gz -C/opt/drill --strip=1
-RUN rm -f /tmp/apache-drill-$VERSION.tar.gz
+# Copy the verified Drill files from the verifier stage
+COPY --from=verifier /tmp/drill /opt/drill
 
 # Change conf folder owner as some files are required to be created tmporarily.
 RUN chgrp -v -R drill /opt/drill
@@ -54,8 +89,8 @@ RUN chown -R drill /opt/drill/conf
 EXPOSE 8047 31010 31011 31012
 
 # Test Drill
-#RUN echo "select * from sys.version;" > /tmp/version.sql
-#RUN /opt/drill/bin/sqlline -u jdbc:drill:zk=local --verbose --run=/tmp/version.sql
+RUN echo "select * from sys.version;" > /tmp/version.sql
+RUN /opt/drill/bin/sqlline -u jdbc:drill:zk=local --verbose --run=/tmp/version.sql
 
 # Copy Scripts
 COPY distrib-env.sh drill-distrib.conf /opt/drill/conf/
@@ -81,5 +116,4 @@ RUN cd /opt/drill/jars/3rdparty && echo $(cat azure-storage-${AZURE_STORAGE_VERS
 USER drill
 
 # Start Drill
-ENTRYPOINT /opt/drill/start.sh
-
+ENTRYPOINT ["/opt/drill/start.sh"]
