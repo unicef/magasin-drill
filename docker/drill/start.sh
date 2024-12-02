@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-echo "Setting up memory..."
+
+figlet -f slant "Drill"
 
 echo "Docker Image build information"
 echo "---------------------------------"
@@ -10,12 +11,13 @@ echo HADOOP_AZURE_VERSION= $HADOOP_AZURE_VERSION
 echo "---------------------------------"
 
 # Be verbose 
-set -x
+#set -x
 DRILL_HOME="/opt/drill"
 DRILL_ENV_FILE="${DRILL_HOME}/conf/distrib-env.sh"
 DRILL_CONF_FILE="${DRILL_HOME}/conf/drill-distrib.conf"
 DRILL_CONF_OVERRIDE_FILE="${DRILL_HOME}/conf/drill-override.conf"
 
+echo "Setting up memory..."
 # Configuring Drill memory
 DRILL_MAX_MEMORY_VALUE=`echo ${DRILL_MAX_MEMORY} | tr -dc '0-9'`
 sed -i "s/__DRILL_MAX_MEMORY_VALUE__/${DRILL_MAX_MEMORY_VALUE}/g" ${DRILL_ENV_FILE}
@@ -52,7 +54,7 @@ fi
 ${DRILL_HOME}/bin/drillbit.sh status
 
 # Stop being verbose
-set +x
+#set +x
 
 # Keep container alive
 while true; do sleep 5; done
