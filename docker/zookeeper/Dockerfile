@@ -13,33 +13,31 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Download Drill, sha512 checksum, GPG signature and PGP keys
-RUN wget ${MIRROR}/dist/${PROJECT}/${PROJECT}-$VERSION/apache-${PROJECT}-${VERSION}.tar.gz -P /tmp/
-RUN wget ${MIRROR}/dist/${PROJECT}/${PROJECT}-$VERSION/apache-${PROJECT}-${VERSION}.tar.gz.sha512 -P /tmp/
-RUN wget ${MIRROR}/dist/${PROJECT}/${PROJECT}-$VERSION/apache-${PROJECT}-${VERSION}.tar.gz.asc -P /tmp/
+RUN wget ${MIRROR}/dist/${PROJECT}/${PROJECT}-$VERSION/apache-${PROJECT}-${VERSION}-bin.tar.gz -P /tmp/
+RUN wget ${MIRROR}/dist/${PROJECT}/${PROJECT}-$VERSION/apache-${PROJECT}-${VERSION}-bin.tar.gz.sha512 -P /tmp/
+RUN wget ${MIRROR}/dist/${PROJECT}/${PROJECT}-$VERSION/apache-${PROJECT}-${VERSION}-bin.tar.gz.asc -P /tmp/
 RUN wget ${MIRROR}/dist/${PROJECT}/KEYS -P /tmp/
 
 # Create the drill pgp keyring
 RUN gpg --no-default-keyring --keyring /tmp/keyring.gpg --import /tmp/KEYS
 
 # Verify SHA512 checksum
-RUN cd /tmp && sha512sum -c apache-${PROJECT}-${VERSION}.tar.gz.sha512
+RUN cd /tmp && sha512sum -c apache-${PROJECT}-${VERSION}-bin.tar.gz.sha512
 
 # Verify GPG signature
-RUN gpgv --keyring /tmp/keyring.gpg /tmp/apache-${PROJECT}-${VERSION}.tar.gz.asc /tmp/apache-${PROJECT}-${VERSION}.tar.gz
+RUN gpgv --keyring /tmp/keyring.gpg /tmp/apache-${PROJECT}-${VERSION}-bin.tar.gz.asc /tmp/apache-${PROJECT}-${VERSION}-bin.tar.gz
 
 # Extract Drill
 RUN mkdir -p /tmp/${PROJECT}
-RUN tar -xzvf /tmp/apache-${PROJECT}-$VERSION.tar.gz -C /tmp/${PROJECT} --strip=1
+RUN tar -xzvf /tmp/apache-${PROJECT}-$VERSION-bin.tar.gz -C /tmp/${PROJECT} --strip=1
 
 # remove the tar file
-RUN rm -f /tmp/apache-${PROJECT}-$VERSION.tar.gz
+RUN rm -f /tmp/apache-${PROJECT}-$VERSION-bin.tar.gz
 
 
-
+#
 # Stage 2: Setup & dependency download
-
-
-
+#
 FROM debian:stable-slim
 
 ARG VERSION
@@ -73,7 +71,7 @@ RUN mkdir -p /var/log/zookeeper && chown zk /var/log/zookeeper && chgrp zk /var/
 
 # Copy the extracted files from the previous stage
 COPY --from=verifier /tmp/${PROJECT} /opt/${PROJECT}
-RUN rm -f /tmp/apache-zookeeper-${VERSION}-bin.tar.gz
+
 
 # Copy the configuration of ZooKeeper
 COPY zoo.cfg /opt/zookeeper/conf/zoo.cfg
