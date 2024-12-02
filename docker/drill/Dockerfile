@@ -47,8 +47,20 @@ COPY distrib-env.sh drill-distrib.conf /opt/drill/conf/
 COPY isLive.sh isReady.sh preStop.sh /opt/drill/bin/
 COPY start.sh /opt/drill/start.sh
 
-# Copy local jars
-COPY jars/* /opt/drill/jars/3rdparty/
+# Download 3rd party dependencies
+# Available versions in https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-azure/
+RUN wget https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-azure/${HADOOP_AZURE_VERSION}/hadoop-azure-${HADOOP_AZURE_VERSION}.jar  -P /opt/drill/jars/3rdparty
+# Ensure the integrity of the downloaded file (sha1)
+RUN wget https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-azure/${HADOOP_AZURE_VERSION}/hadoop-azure-${HADOOP_AZURE_VERSION}.jar.sha1  -P /opt/drill/jars/3rdparty
+RUN cd /opt/drill/jars/3rdparty && echo $(cat hadoop-azure-${HADOOP_AZURE_VERSION}.jar.sha1) hadoop-azure-${HADOOP_AZURE_VERSION}.jar | sha1sum -c -
+
+
+# Available versions in https://repo1.maven.org/maven2/com/microsoft/azure/azure-storage/
+RUN wget https://repo1.maven.org/maven2/com/microsoft/azure/azure-storage/${AZURE_STORAGE_VERSION}/azure-storage-${AZURE_STORAGE_VERSION}.jar  -P /opt/drill/jars/3rdparty
+# Ensure the integrity of the downloaded file (sha1)
+RUN wget https://repo1.maven.org/maven2/com/microsoft/azure/azure-storage/${AZURE_STORAGE_VERSION}/azure-storage-${AZURE_STORAGE_VERSION}.jar.sha1  -P /opt/drill/jars/3rdparty
+RUN cd /opt/drill/jars/3rdparty && echo $(cat azure-storage-${AZURE_STORAGE_VERSION}.jar.sha1) azure-storage-${AZURE_STORAGE_VERSION}.jar | sha1sum -c -
+
 
 # Set user to run the service
 USER drill
