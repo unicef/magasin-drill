@@ -1,8 +1,9 @@
-# Stage 1: DRILL download and verification
+# Stage 1: Zookeeper download and verification
 FROM debian:stable-slim AS verifier
 
 ARG VERSION
 ARG MIRROR=https://archive.apache.org
+
 
 ENV PROJECT=zookeeper
 
@@ -12,16 +13,16 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Download Drill, sha512 checksum, GPG signature and PGP keys
-RUN wget ${MIRROR}/dist/${PROJECT}/$VERSION/apache-${PROJECT}-${VERSION}.tar.gz -P /tmp/
-RUN wget ${MIRROR}/dist/${PROJECT}/$VERSION/apache-${PROJECT}-${VERSION}.tar.gz.sha512 -P /tmp/
-RUN wget ${MIRROR}/dist/${PROJECT}/$VERSION/apache-${PROJECT}-${VERSION}.tar.gz.asc -P /tmp/
+RUN wget ${MIRROR}/dist/${PROJECT}/${PROJECT}-$VERSION/apache-${PROJECT}-${VERSION}.tar.gz -P /tmp/
+RUN wget ${MIRROR}/dist/${PROJECT}/${PROJECT}-$VERSION/apache-${PROJECT}-${VERSION}.tar.gz.sha512 -P /tmp/
+RUN wget ${MIRROR}/dist/${PROJECT}/${PROJECT}-$VERSION/apache-${PROJECT}-${VERSION}.tar.gz.asc -P /tmp/
 RUN wget ${MIRROR}/dist/${PROJECT}/KEYS -P /tmp/
 
 # Create the drill pgp keyring
 RUN gpg --no-default-keyring --keyring /tmp/keyring.gpg --import /tmp/KEYS
 
 # Verify SHA512 checksum
-RUN cd /tmp && echo "$(cat apache-${PROJECT}-${VERSION}.tar.gz.sha512) apache-${PROJECT}-${VERSION}.tar.gz" | sha512sum -c -
+RUN cd /tmp && sha512sum -c apache-${PROJECT}-${VERSION}.tar.gz.sha512
 
 # Verify GPG signature
 RUN gpgv --keyring /tmp/keyring.gpg /tmp/apache-${PROJECT}-${VERSION}.tar.gz.asc /tmp/apache-${PROJECT}-${VERSION}.tar.gz
@@ -87,4 +88,4 @@ EXPOSE 2181 2888 3888
 COPY start.sh /opt/zookeeper/start.sh
 
 USER zk
-ENTRYPOINT /opt/zookeeper/start.sh
+ENTRYPOINT ["/opt/zookeeper/start.sh"]
