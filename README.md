@@ -13,6 +13,7 @@ This extension has been created to fit the needs of [UNICEF's magasin](https://g
 
 | Chart Version | Drill Version | Zookeeper Version | Release Date       | Release notes          |
 |---------------|---------------|-------------------|--------------------|------------------------|
+| 0.9.0         | 1.21.2        | 3.9.3             | 2024-12-02         | [Release notes v0.9.0](https://github.com/unicef/magasin-drill/releases/tag/releases%2Fv0.9.0) |
 | 0.8.0         | 1.21.2        | 3.9.2             | 2024-09-04         | [Release notes v0.8.0](https://github.com/unicef/magasin-drill/releases/tag/releases%2Fv0.8.0) | 
 | 0.7.2         | 1.21.2        | 3.9.2             | 2024-08-07         | [Release notes v0.7.2](https://github.com/unicef/magasin-drill/releases/tag/releases%2Fv0.7.2) |
 | 0.7.1         | 1.21.1        | 3.9.1             | 2024-02-05         | [Release notes v0.7.1](https://github.com/unicef/magasin-drill/releases/tag/releases%2Fv0.7.1) |
